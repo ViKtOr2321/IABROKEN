@@ -1,0 +1,35 @@
+<!<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrokerAI</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 🌙 ÍCONE DARK MODE -->
+  <div class="top-icons">
+    <div class="moon-icon" onclick="alternarTema()"></div>
+  </div>
+
+  <div class="container">
+    <h1>BrokerAI</h1>
+
+    <div id="chatArea"></div>
+
+    <div class="chat-box">
+      <span class="icon">+</span>
+
+      <input type="text" placeholder="Pergunte algo..." id="inputMensagem">
+
+      <span class="icon">🎤</span>
+
+      <button onclick="enviarMensagem()">➤</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
