@@ -1,33 +1,46 @@
 let conversaAtual = [];
 
-function enviarMensagem() {
+// 🔹 ENVIAR MENSAGEM
+async function enviarMensagem() {
   const input = document.getElementById("inputMensagem");
   const chatArea = document.getElementById("chatArea");
 
   const texto = input.value.trim();
-
   if (texto === "") return;
 
-  // Se for a primeira mensagem → limpa chat (nova conversa)
   if (conversaAtual.length === 0) {
     chatArea.innerHTML = "";
   }
 
-  conversaAtual.push({ tipo: "usuario", texto });
+  conversaAtual.push({ role: "user", content: texto });
 
   adicionarMensagem("usuario", texto);
-
   input.value = "";
 
-  setTimeout(() => {
-    const resposta = gerarResposta(texto);
+  const thinkingMsg = adicionarMensagem("ia", "Pensando...");
 
-    conversaAtual.push({ tipo: "ia", texto: resposta });
+  try {
+    const resposta = await chamarIA();
+
+    if (thinkingMsg && thinkingMsg.parentNode) {
+      thinkingMsg.parentNode.removeChild(thinkingMsg);
+    }
+
+    conversaAtual.push({ role: "assistant", content: resposta });
 
     adicionarMensagem("ia", resposta);
-  }, 500);
+
+  } catch (erro) {
+    if (thinkingMsg && thinkingMsg.parentNode) {
+      thinkingMsg.parentNode.removeChild(thinkingMsg);
+    }
+
+    adicionarMensagem("ia", "Erro ao conectar com a IA.");
+    console.error("ERRO COMPLETO:", erro);
+  }
 }
 
+// 🔹 ADICIONAR MENSAGEM
 function adicionarMensagem(tipo, texto) {
   const chatArea = document.getElementById("chatArea");
 
@@ -37,29 +50,76 @@ function adicionarMensagem(tipo, texto) {
 
   chatArea.appendChild(msg);
   chatArea.scrollTop = chatArea.scrollHeight;
+
+  return msg;
 }
 
-function gerarResposta(texto) {
-  texto = texto.toLowerCase();
-
-  if (texto.includes("casa")) return "Você quer comprar ou alugar uma casa?";
-  if (texto.includes("apartamento")) return "Qual cidade você procura?";
-  if (texto.includes("preço")) return "Qual seu orçamento?";
-
-  return "Pode me dar mais detalhes?";
+// 🔹 CARREGAR API KEY
+async function carregarApiKey() {
+  const response = await fetch("apiKey.json");
+  const data = await response.json();
+  return data.apiKey;
 }
 
-// Botão para nova conversa manual
+// 🔹 CHAMAR AZURE OPENAI
+async function chamarIA() {
+  const apiKey = await carregarApiKey();
+
+  const endpoint = "https://georg-ml7854jc-swedencentral.cognitiveservices.azure.com";
+
+  const response = await fetch(
+    `${endpoint}/openai/responses?api-version=2025-04-01-preview`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": apiKey
+      },
+      body: JSON.stringify({
+        model: "gpt-5.2-chat", // ⚠️ use o nome do seu deployment
+        input: conversaAtual
+          .map(m => `${m.role === "user" ? "Usuário" : "IA"}: ${m.content}`)
+          .join("\n"),
+        max_output_tokens: 300
+      })
+    }
+  );
+
+  const data = await response.json();
+  console.log("JSON PARSEADO:", data);
+
+  if (!data.output) {
+    console.error("ERRO API:", data);
+    throw new Error("Erro na resposta da API");
+  }
+
+  // 🔥 EXTRAÇÃO CORRETA DA RESPOSTA
+  const mensagem = data.output.find(item => item.type === "message");
+
+  if (!mensagem || !mensagem.content || !mensagem.content.length) {
+    throw new Error("Resposta inválida da IA");
+  }
+
+  const texto = mensagem.content.find(c => c.type === "output_text");
+
+  return texto ? texto.text : "Sem resposta da IA";
+}
+
+// 🔹 ENTER PARA ENVIAR
+document.getElementById("inputMensagem")
+  .addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+      enviarMensagem();
+    }
+});
+
+// 🔹 NOVA CONVERSA
 function novaConversa() {
   conversaAtual = [];
   document.getElementById("chatArea").innerHTML = "";
 }
-document.getElementById("inputMensagem")
-  .addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-      enviarMensagem('chatArea.scrollTop = chatArea.scrollHeight;');
-    }
-});
+
+// 🔹 DARK MODE
 function alternarTema() {
   document.body.classList.toggle("dark");
 
@@ -70,6 +130,7 @@ function alternarTema() {
   }
 }
 
+// 🔹 CARREGAR TEMA
 window.onload = function() {
   const tema = localStorage.getItem("tema");
 
