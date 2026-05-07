@@ -1,35 +1,197 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>BrokerAI</title>
 
+  <!-- FONT AWESOME -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  >
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-  <!-- 🌙 ÍCONE DARK MODE -->
-  <div class="top-icons">
-    <div class="moon-icon" onclick="alternarTema()"></div>
-  </div>
+  <!-- ========================= -->
+  <!-- CONTAINER -->
+  <!-- ========================= -->
 
   <div class="container">
-    <h1>BrokerAI</h1>
 
-    <div id="chatArea"></div>
+    <!-- ========================= -->
+    <!-- DARK MODE -->
+    <!-- ========================= -->
+
+    <div class="top-icons">
+
+      <div
+        class="moon-icon"
+        onclick="alternarTema()"
+      >
+        <i class="fa-solid fa-moon"></i>
+      </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- TOGGLE IA -->
+    <!-- ========================= -->
+
+    <div class="toggle-wrapper">
+
+      <div class="toggle-container">
+
+        <span
+          class="toggle-label"
+          id="labelGPT"
+        >
+          GPT
+        </span>
+
+        <label class="switch">
+
+          <input
+            type="checkbox"
+            id="toggleIA"
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+        <span
+          class="toggle-label"
+          id="labelGemini"
+        >
+          Gemini
+        </span>
+
+      </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- TELA INICIAL -->
+    <!-- ========================= -->
+
+    <div id="telaInicial">
+
+      <div class="cenario">
+
+        <!-- CASA -->
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/69/69524.png"
+          class="casa"
+          alt="Casa"
+        >
+
+        <!-- ROBÔ -->
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+          class="robo"
+          id="robo"
+          alt="Robô"
+        >
+
+      </div>
+
+      <h2>Bem-vindo ao BrokerAI</h2>
+
+      <p>Seu assistente inteligente imobiliário</p>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- TOPO -->
+    <!-- ========================= -->
+
+    <header class="topo">
+
+      <!-- LOGO -->
+      <div
+        class="logo-area"
+        onclick="reiniciarChat()"
+      >
+
+        <i class="fa-solid fa-building"></i>
+
+        <h1>BrokerAI</h1>
+
+      </div>
+
+    </header>
+
+    <!-- ========================= -->
+    <!-- CHAT -->
+    <!-- ========================= -->
+
+    <main
+      id="chatArea"
+      class="chat-area"
+    ></main>
+
+    <!-- ========================= -->
+    <!-- INPUT -->
+    <!-- ========================= -->
 
     <div class="chat-box">
-      <span class="icon">+</span>
 
-      <input type="text" placeholder="Pergunte algo..." id="inputMensagem">
+      <!-- BOTÃO + -->
+      <button
+        class="icon-button"
+        type="button"
+      >
+        <i class="fa-solid fa-plus"></i>
+      </button>
 
-      <span class="icon">🎤</span>
+      <!-- INPUT -->
+      <input
+        type="text"
+        id="inputMensagem"
+        placeholder="Pergunte algo..."
+        autocomplete="off"
+      >
 
-      <button onclick="enviarMensagem()">➤</button>
+      <!-- MICROFONE -->
+      <button
+        class="icon-button"
+        type="button"
+        id="btnMicrofone"
+      >
+        <i class="fa-solid fa-microphone"></i>
+      </button>
+
+      <!-- ENVIAR -->
+      <button
+        class="send-button"
+        type="button"
+        onclick="enviarMensagem()"
+      >
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+
     </div>
+
   </div>
 
+  <!-- AZURE SPEECH -->
+  <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+
+  <!-- SCRIPT -->
   <script src="script.js"></script>
+
 </body>
 </html>
