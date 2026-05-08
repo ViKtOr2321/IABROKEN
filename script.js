@@ -4,7 +4,6 @@ let conversaAtual = [];
 // MODELO ATUAL
 // =========================
 
-// inicia no GPT
 let modeloAtual = "gpt";
 
 // =========================
@@ -12,13 +11,7 @@ let modeloAtual = "gpt";
 // =========================
 
 const promptSistema = `
-Você é o BrokerAI, um assistente inteligente especializado no mercado imobiliário.
-
-Ajude usuários a:
-- Comprar imóveis
-- Vender imóveis
-- Investir
-- Tirar dúvidas sobre financiamento
+Você é o BrokerAI.
 
 Regras:
 - Responda em português do Brasil
@@ -26,8 +19,13 @@ Regras:
 - Use linguagem simples
 - Dê sugestões práticas
 - Não invente informações
-- Responda como um corretor experiente
 `;
+
+// =========================
+// CONTROLE DE ÁUDIO
+// =========================
+
+let audioAtual = null;
 
 // =========================
 // ENVIAR MENSAGEM
@@ -36,11 +34,14 @@ Regras:
 async function enviarMensagem() {
 
   const input =
-    document.getElementById("inputMensagem");
+    document.getElementById(
+      "inputMensagem"
+    );
 
   if (!input) return;
 
-  const texto = input.value.trim();
+  const texto =
+    input.value.trim();
 
   if (texto === "") return;
 
@@ -56,13 +57,19 @@ async function enviarMensagem() {
     content: texto
   });
 
-  adicionarMensagem("usuario", texto);
+  adicionarMensagem(
+    "usuario",
+    texto
+  );
 
   input.value = "";
 
-  // cria mensagem da IA
+  // mensagem IA
   const msgIA =
-    adicionarMensagem("ia", "Pensando...");
+    adicionarMensagem(
+      "ia",
+      "Pensando..."
+    );
 
   try {
 
@@ -74,11 +81,13 @@ async function enviarMensagem() {
 
     if (modeloAtual === "gpt") {
 
-      resposta = await chamarIA();
+      resposta =
+        await chamarIA();
 
     } else {
 
-      resposta = await chamarGemini();
+      resposta =
+        await chamarGemini();
 
     }
 
@@ -87,7 +96,29 @@ async function enviarMensagem() {
       content: resposta
     });
 
-    efeitoDigitando(msgIA, resposta);
+    // efeito digitando
+    efeitoDigitando(
+      msgIA,
+      resposta
+    );
+
+    // =========================
+    // VOZ AUTOMÁTICA
+    // =========================
+
+    if (modeloAtual === "gpt") {
+
+      falarTextoAzure(
+        resposta
+      );
+
+    } else {
+
+      falarTextoGemini(
+        resposta
+      );
+
+    }
 
   } catch (erro) {
 
@@ -97,24 +128,32 @@ async function enviarMensagem() {
     );
 
     msgIA.innerText =
-      "⚠️ Erro ao conectar com a IA.";
+      "Erro ao conectar com IA.";
 
   }
+
 }
 
 // =========================
 // ADICIONAR MENSAGEM
 // =========================
 
-function adicionarMensagem(tipo, texto) {
+function adicionarMensagem(
+  tipo,
+  texto
+) {
 
   const chatArea =
-    document.getElementById("chatArea");
+    document.getElementById(
+      "chatArea"
+    );
 
   if (!chatArea) return null;
 
   const msg =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   msg.classList.add(
     "mensagem",
@@ -128,13 +167,17 @@ function adicionarMensagem(tipo, texto) {
   atualizarScroll();
 
   return msg;
+
 }
 
 // =========================
 // EFEITO DIGITANDO
 // =========================
 
-function efeitoDigitando(elemento, texto) {
+function efeitoDigitando(
+  elemento,
+  texto
+) {
 
   if (!elemento) return;
 
@@ -142,22 +185,67 @@ function efeitoDigitando(elemento, texto) {
 
   let i = 0;
 
-  const intervalo = setInterval(() => {
+  const intervalo =
+    setInterval(() => {
 
-    elemento.innerText =
-      texto.substring(0, i + 1);
+      elemento.innerText =
+        texto.substring(
+          0,
+          i + 1
+        );
 
-    i++;
+      i++;
 
-    atualizarScroll();
+      atualizarScroll();
 
-    if (i >= texto.length) {
+      if (i >= texto.length) {
 
-      clearInterval(intervalo);
+        clearInterval(
+          intervalo
+        );
 
-    }
+      }
 
-  }, 15);
+    }, 15);
+
+}
+
+// =========================
+// LIMPAR TEXTO
+// =========================
+
+function limparTextoParaFala(
+  texto
+) {
+
+  return texto
+
+    // remove emojis
+    .replace(
+      /[\u{1F300}-\u{1FAFF}]/gu,
+      ""
+    )
+
+    // remove markdown
+    .replace(
+      /[*#_~`>|<{}\[\]\\\/+=]/g,
+      ""
+    )
+
+    // remove espaços excessivos
+    .replace(/\s+/g, " ")
+
+    // separa palavras grudadas
+    .replace(
+      /([a-záàâãéèêíïóôõöúç])([A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ])/g,
+      "$1 $2"
+    )
+
+    // mantém acentos corretos
+    .normalize("NFC")
+
+    .trim();
+
 }
 
 // =========================
@@ -167,7 +255,9 @@ function efeitoDigitando(elemento, texto) {
 function atualizarScroll() {
 
   const chatArea =
-    document.getElementById("chatArea");
+    document.getElementById(
+      "chatArea"
+    );
 
   if (!chatArea) return;
 
@@ -177,6 +267,7 @@ function atualizarScroll() {
       chatArea.scrollHeight;
 
   }, 50);
+
 }
 
 // =========================
@@ -188,7 +279,9 @@ async function carregarApiKeyGPT() {
   try {
 
     const res =
-      await fetch("apiKey.json");
+      await fetch(
+        "apiKey.json"
+      );
 
     const data =
       await res.json();
@@ -205,6 +298,7 @@ async function carregarApiKeyGPT() {
     return null;
 
   }
+
 }
 
 async function carregarApiKeyGemini() {
@@ -212,7 +306,9 @@ async function carregarApiKeyGemini() {
   try {
 
     const res =
-      await fetch("apiKey.json");
+      await fetch(
+        "apiKey.json"
+      );
 
     const data =
       await res.json();
@@ -229,10 +325,11 @@ async function carregarApiKeyGemini() {
     return null;
 
   }
+
 }
 
 // =========================
-// GPT
+// GPT CHAT
 // =========================
 
 async function chamarIA() {
@@ -244,45 +341,51 @@ async function chamarIA() {
 
     if (!apiKey) {
 
-      return "⚠️ API Key GPT não encontrada.";
+      return "API Key GPT não encontrada.";
 
     }
 
     const endpoint =
       "https://georg-ml7854jc-swedencentral.cognitiveservices.azure.com";
 
-    const resposta = await fetch(
-      `${endpoint}/openai/responses?api-version=2025-04-01-preview`,
-      {
-        method: "POST",
+    const resposta =
+      await fetch(
+        `${endpoint}/openai/responses?api-version=2025-04-01-preview`,
+        {
+          method: "POST",
 
-        headers: {
+          headers: {
 
-          "Content-Type":
-            "application/json",
+            "Content-Type":
+              "application/json",
 
-          "api-key":
-            apiKey
+            "api-key":
+              apiKey
 
-        },
+          },
 
-        body: JSON.stringify({
+          body: JSON.stringify({
 
-          model: "gpt-5.2-chat",
+            model:
+              "gpt-5.2-chat",
 
-          input:
-            promptSistema + "\n\n" +
-            conversaAtual.map(m =>
-              `${m.role === "user"
-                ? "Usuário"
-                : "IA"}: ${m.content}`
-            ).join("\n"),
+            input:
+              promptSistema +
+              "\n\n" +
+              conversaAtual.map(
+                m =>
+                  `${m.role === "user"
+                    ? "Usuário"
+                    : "IA"}: ${m.content}`
+              ).join("\n"),
 
-          max_output_tokens: 300
+            max_output_tokens:
+              300
 
-        })
-      }
-    );
+          })
+
+        }
+      );
 
     if (!resposta.ok) {
 
@@ -294,29 +397,28 @@ async function chamarIA() {
         erroTexto
       );
 
-      return "⚠️ Erro no GPT.";
+      return "Erro no GPT.";
 
     }
 
     const data =
       await resposta.json();
 
-    console.log(
-      "GPT JSON:",
-      data
-    );
-
     const mensagem =
       data.output.find(
-        i => i.type === "message"
+        i =>
+          i.type ===
+          "message"
       );
 
     const texto =
       mensagem.content.find(
-        i => i.type === "output_text"
+        i =>
+          i.type ===
+          "output_text"
       );
 
-    return "🧠 GPT:\n\n" + texto.text;
+    return texto.text;
 
   } catch (erro) {
 
@@ -325,13 +427,14 @@ async function chamarIA() {
       erro
     );
 
-    return "⚠️ Falha ao conectar GPT.";
+    return "Falha ao conectar GPT.";
 
   }
+
 }
 
 // =========================
-// GEMINI
+// GEMINI CHAT
 // =========================
 
 async function chamarGemini() {
@@ -343,73 +446,66 @@ async function chamarGemini() {
 
     if (!apiKey) {
 
-      return "⚠️ API Key Gemini não encontrada.";
+      return "API Key Gemini não encontrada.";
 
     }
 
-
-    // evita spam
-    await new Promise(r =>
-      setTimeout(r, 1200)
-    );
-
-    // limita histórico
     const historicoLimitado =
       conversaAtual.slice(-8);
 
-    const model = "gemini-3.1-flash-lite-preview"
-    // const model = "gemini-3-flash-preview"
-    // const model = "gemini-2.5-pro"
-    // const model = "gemini-2.5-flash"
+    const model =
+      "gemini-2.5-flash";
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-      {
-        method: "POST",
+    const response =
+      await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        {
 
-        headers: {
+          method: "POST",
 
-          "Content-Type":
-            "application/json",
+          headers: {
 
-          "x-goog-api-key":
-            apiKey
+            "Content-Type":
+              "application/json",
 
-        },
+            "x-goog-api-key":
+              apiKey
 
-        body: JSON.stringify({
+          },
 
-          contents: [
-            {
-              parts: [
-                {
-                  text:
-                    promptSistema + "\n\n" +
-                    historicoLimitado.map(m =>
-                      `${m.role === "user"
-                        ? "Usuário"
-                        : "IA"}: ${m.content}`
-                    ).join("\n")
-                }
-              ]
+          body: JSON.stringify({
+
+            contents: [
+              {
+                parts: [
+                  {
+                    text:
+                      promptSistema +
+                      "\n\n" +
+                      historicoLimitado.map(
+                        m =>
+                          `${m.role === "user"
+                            ? "Usuário"
+                            : "IA"}: ${m.content}`
+                      ).join("\n")
+                  }
+                ]
+              }
+            ],
+
+            generationConfig: {
+
+              temperature: 0.7,
+
+              maxOutputTokens:
+                2000
+
             }
-          ],
 
-          generationConfig: {
+          })
 
-            temperature: 0.7,
-
-            maxOutputTokens: 2000
-
-          }
-
-        })
-      }
-    );
-
-    // =========================
-    // ERROS HTTP
-    // =========================
+        }
+      );
 
     if (!response.ok) {
 
@@ -418,45 +514,15 @@ async function chamarGemini() {
 
       console.error(
         "ERRO GEMINI:",
-        {
-          status: response.status,
-          body: erroTexto
-        }
+        erroTexto
       );
 
-      if (response.status === 429) {
-
-        return "⚠️ Limite temporário do Gemini atingido.";
-
-      }
-
-      if (response.status === 400) {
-
-        return "⚠️ API Key Gemini inválida.";
-
-      }
-
-      if (response.status === 403) {
-
-        return "⚠️ Gemini sem permissão.";
-
-      }
-
-      return "⚠️ Erro no Gemini.";
+      return "Erro no Gemini.";
 
     }
 
     const data =
       await response.json();
-
-    console.log(
-      "GEMINI JSON:",
-      data
-    );
-
-    // =========================
-    // VALIDAÇÃO
-    // =========================
 
     const partes =
       data?.candidates?.[0]
@@ -467,19 +533,7 @@ async function chamarGemini() {
         p => p.text
       ).join("");
 
-    if (!texto ||
-        texto.trim() === "") {
-
-      console.error(
-        "RESPOSTA INVÁLIDA:",
-        data
-      );
-
-      return "⚠️ Gemini não respondeu.";
-
-    }
-
-    return "🤖 GEMINI:\n\n" + texto;
+    return texto;
 
   } catch (erro) {
 
@@ -488,9 +542,10 @@ async function chamarGemini() {
       erro
     );
 
-    return "⚠️ Falha ao conectar Gemini.";
+    return "Falha ao conectar Gemini.";
 
   }
+
 }
 
 // =========================
@@ -527,12 +582,10 @@ if (inputMensagem) {
 
 window.onload = function() {
 
-  // =========================
-  // TEMA
-  // =========================
-
   const tema =
-    localStorage.getItem("tema");
+    localStorage.getItem(
+      "tema"
+    );
 
   if (tema === "dark") {
 
@@ -542,10 +595,6 @@ window.onload = function() {
 
   }
 
-  // =========================
-  // TOGGLE IA
-  // =========================
-
   const toggle =
     document.getElementById(
       "toggleIA"
@@ -553,10 +602,11 @@ window.onload = function() {
 
   if (toggle) {
 
-    // inicia GPT desligado
-    toggle.checked = false;
+    toggle.checked =
+      false;
 
-    modeloAtual = "gpt";
+    modeloAtual =
+      "gpt";
 
     toggle.addEventListener(
       "change",
@@ -567,10 +617,18 @@ window.onload = function() {
           modeloAtual =
             "gemini";
 
+          console.log(
+            "Gemini ativado"
+          );
+
         } else {
 
           modeloAtual =
             "gpt";
+
+          console.log(
+            "GPT ativado"
+          );
 
         }
 
@@ -604,6 +662,7 @@ function alternarTema() {
       : "light"
 
   );
+
 }
 
 // =========================
@@ -622,14 +681,16 @@ function iniciarAnimacao() {
       "telaInicial"
     );
 
-  if (!robo || !tela) return;
+  if (!robo || !tela)
+    return;
 
   robo.style.transform =
     "translateX(320px)";
 
   setTimeout(() => {
 
-    tela.style.opacity = "0";
+    tela.style.opacity =
+      "0";
 
     tela.style.pointerEvents =
       "none";
@@ -638,13 +699,15 @@ function iniciarAnimacao() {
 
   setTimeout(() => {
 
-    tela.style.display = "none";
+    tela.style.display =
+      "none";
 
   }, 3000);
+
 }
 
 // =========================
-// VOZ / MICROFONE
+// MICROFONE
 // =========================
 
 const SpeechRecognition =
@@ -656,11 +719,14 @@ if (SpeechRecognition) {
   const recognition =
     new SpeechRecognition();
 
-  recognition.lang = "pt-BR";
+  recognition.lang =
+    "pt-BR";
 
-  recognition.continuous = false;
+  recognition.continuous =
+    false;
 
-  recognition.interimResults = false;
+  recognition.interimResults =
+    false;
 
   const botaoMicrofone =
     document.getElementById(
@@ -680,7 +746,7 @@ if (SpeechRecognition) {
         );
 
         console.log(
-          "🎤 Ouvindo..."
+          "Microfone ouvindo..."
         );
 
       }
@@ -688,21 +754,12 @@ if (SpeechRecognition) {
 
   }
 
-  // =========================
-  // RESULTADO DA VOZ
-  // =========================
-
   recognition.onresult =
     function(event) {
 
       const texto =
         event.results[0][0]
         .transcript;
-
-      console.log(
-        "Texto reconhecido:",
-        texto
-      );
 
       const input =
         document.getElementById(
@@ -714,10 +771,6 @@ if (SpeechRecognition) {
       enviarMensagem();
 
     };
-
-  // =========================
-  // FINALIZAÇÃO
-  // =========================
 
   recognition.onend =
     function() {
@@ -735,95 +788,56 @@ if (SpeechRecognition) {
 
       }
 
-      console.log(
-        "🎤 Microfone finalizado"
-      );
-
     };
-
-  // =========================
-  // ERROS
-  // =========================
-
-  recognition.onerror =
-    function(event) {
-
-      console.error(
-        "ERRO MICROFONE:",
-        event.error
-      );
-
-      const botaoMicrofone =
-        document.getElementById(
-          "btnMicrofone"
-        );
-
-      if (botaoMicrofone) {
-
-        botaoMicrofone.classList.remove(
-          "gravando"
-        );
-
-      }
-
-      alert(
-        "Erro no microfone: " +
-        event.error
-      );
-
-    };
-
-} else {
-
-  console.error(
-    "SpeechRecognition não suportado"
-  );
-
-  alert(
-    "Seu navegador não suporta reconhecimento de voz."
-  );
 
 }
+
 // =========================
 // REINICIAR CHAT
 // =========================
 
 function reiniciarChat() {
 
-  // limpa conversa
   conversaAtual = [];
 
-  // limpa mensagens
   const chatArea =
-    document.getElementById("chatArea");
+    document.getElementById(
+      "chatArea"
+    );
 
   if (chatArea) {
 
-    chatArea.innerHTML = "";
+    chatArea.innerHTML =
+      "";
 
   }
 
-  // mostra tela inicial novamente
   const tela =
-    document.getElementById("telaInicial");
+    document.getElementById(
+      "telaInicial"
+    );
 
   if (tela) {
 
-    tela.style.display = "flex";
+    tela.style.display =
+      "flex";
 
     setTimeout(() => {
 
-      tela.style.opacity = "1";
+      tela.style.opacity =
+        "1";
 
-      tela.style.pointerEvents = "all";
+      tela.style.pointerEvents =
+        "all";
 
     }, 50);
 
   }
 
-  // reset robô
   const robo =
-    document.getElementById("robo");
+    document.getElementById(
+      "robo"
+    );
 
   if (robo) {
 
@@ -832,19 +846,273 @@ function reiniciarChat() {
 
   }
 
-  // limpa input
-  const input =
-    document.getElementById("inputMensagem");
+}
 
-  if (input) {
+// =========================
+// AZURE TEXT TO SPEECH
+// =========================
 
-    input.value = "";
+async function falarTextoAzure(
+  texto
+) {
+
+  try {
+
+    if (
+      !texto ||
+      texto.trim() === ""
+    ) return;
+
+    if (audioAtual) {
+
+      audioAtual.pause();
+
+      audioAtual = null;
+
+    }
+
+    const res =
+      await fetch(
+        "apiKey.json"
+      );
+
+    const data =
+      await res.json();
+
+    const speechKey =
+      data.apiKeyGPT;
+
+    const endpoint =
+      "https://swedencentral.tts.speech.microsoft.com/cognitiveservices/v1";
+
+    texto =
+      limparTextoParaFala(
+        texto
+      );
+
+    const ssml = `
+<speak version='1.0' xml:lang='pt-BR'>
+    <voice name='pt-BR-AntonioNeural'>
+        <prosody rate="1.03" pitch="-4%">
+            ${texto}
+        </prosody>
+    </voice>
+</speak>
+`;
+
+    const response =
+      await fetch(
+        endpoint,
+        {
+          method: "POST",
+
+          headers: {
+
+            "Ocp-Apim-Subscription-Key":
+              speechKey,
+
+            "Content-Type":
+              "application/ssml+xml",
+
+            "X-Microsoft-OutputFormat":
+              "audio-24khz-48kbitrate-mono-mp3"
+
+          },
+
+          body: ssml
+
+        }
+      );
+
+    if (!response.ok) {
+
+      const erro =
+        await response.text();
+
+      console.error(
+        "ERRO AZURE:",
+        erro
+      );
+
+      return;
+
+    }
+
+    const audioBlob =
+      await response.blob();
+
+    const audioUrl =
+      URL.createObjectURL(
+        audioBlob
+      );
+
+    audioAtual =
+      new Audio(audioUrl);
+
+    audioAtual.play();
+
+    console.log(
+      "Azure falando..."
+    );
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO VOZ AZURE:",
+      erro
+    );
 
   }
 
-  atualizarScroll();
+}
 
-  console.log(
-    "🔄 Chat reiniciado"
-  );
+// =========================
+// GEMINI TEXT TO SPEECH
+// =========================
+
+async function falarTextoGemini(
+  texto
+) {
+
+  try {
+
+    if (
+      !texto ||
+      texto.trim() === ""
+    ) return;
+
+    if (audioAtual) {
+
+      audioAtual.pause();
+
+      audioAtual = null;
+
+    }
+
+    const apiKey =
+      await carregarapiKeyGemini();
+
+    texto =
+      limparTextoParaFala(
+        texto
+      );
+
+    const endpoint =
+      "https://ai.google.dev/gemini-api/docs/pricing?hl=pt-br#gemini-2.5-flash-preview-tts" 
+     apiKey;
+
+    const response =
+      await fetch(
+        endpoint,
+        {
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body: JSON.stringify({
+
+            contents: [
+              {
+                parts: [
+                  {
+                    text:
+                      texto
+                  }
+                ]
+              }
+            ],
+
+            generationConfig: {
+
+              responseModalities: [
+                "AUDIO"
+              ]
+
+            }
+
+          })
+
+        }
+      );
+
+    if (!response.ok) {
+
+      const erro =
+        await response.text();
+
+      console.error(
+        "ERRO GEMINI TTS:",
+        erro
+      );
+
+      return;
+
+    }
+
+    const result =
+      await response.json();
+
+    console.log(
+      "GEMINI TTS:",
+      result
+    );
+
+    const audioBase64 =
+      result?.candidates?.[0]
+      ?.content?.parts?.find(
+        p => p.inlineData
+      )?.inlineData?.data;
+
+    if (!audioBase64) {
+
+      console.error(
+        "Áudio Gemini não encontrado."
+      );
+
+      return;
+
+    }
+
+    const audioBytes =
+      Uint8Array.from(
+        atob(audioBase64),
+        c => c.charCodeAt(0)
+      );
+
+    const audioBlob =
+      new Blob(
+        [audioBytes],
+        {
+          type: "audio/wav"
+        }
+      );
+
+    const audioUrl =
+      URL.createObjectURL(
+        audioBlob
+      );
+
+    audioAtual =
+      new Audio(audioUrl);
+
+    await audioAtual.play();
+
+    console.log(
+      "Gemini falando..."
+    );
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO GEMINI VOZ:",
+      erro
+    );
+
+  }
+
 }
