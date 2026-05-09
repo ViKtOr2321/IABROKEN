@@ -1,4 +1,14 @@
-let conversaAtual = [];
+// ========================================
+// HISTÓRICO DE CONVERSAS
+// ========================================
+
+let historicoConversas = [];
+
+// ========================================
+// CONVERSA ATUAL
+// ========================================
+
+let conversaAtual = null;
 
 // =========================
 // MODELO ATUAL
@@ -52,10 +62,16 @@ async function enviarMensagem() {
 
   }
 
-  conversaAtual.push({
-    role: "user",
-    content: texto
-  });
+  conversaAtual.mensagens.push({
+  role: "user",
+  content: texto
+});
+
+// salva na memória global
+memoriaGlobal.push({
+  role: "user",
+  content: texto
+});
 
   adicionarMensagem(
     "usuario",
@@ -91,10 +107,10 @@ async function enviarMensagem() {
 
     }
 
-    conversaAtual.push({
-      role: "assistant",
-      content: resposta
-    });
+    conversaAtual.mensagens.push({
+  role: "assistant",
+  content: resposta
+});
 
     // efeito digitando
     efeitoDigitando(
@@ -403,6 +419,8 @@ async function chamarIA() {
 
     const data =
       await resposta.json();
+    
+    console.log(data);
 
     const mensagem =
       data.output.find(
@@ -707,88 +725,284 @@ function iniciarAnimacao() {
 }
 
 // =========================
-// MICROFONE
+// MICROFONE INTELIGENTE
 // =========================
 
 const SpeechRecognition =
   window.SpeechRecognition ||
   window.webkitSpeechRecognition;
 
+let recognition = null;
+
+// =========================
+// CONFIG
+// =========================
+
+const palavraChave =
+  "broker";
+
+let ouvindoComando =
+  false;
+
+let textoCapturado =
+  "";
+
+// =========================
+// INICIAR
+// =========================
+
 if (SpeechRecognition) {
 
-  const recognition =
+  recognition =
     new SpeechRecognition();
 
   recognition.lang =
     "pt-BR";
 
   recognition.continuous =
-    false;
+    true;
 
   recognition.interimResults =
-    false;
+    true;
 
-  const botaoMicrofone =
-    document.getElementById(
-      "btnMicrofone"
-    );
-
-  if (botaoMicrofone) {
-
-    botaoMicrofone.addEventListener(
-      "click",
-      () => {
-
-        recognition.start();
-
-        botaoMicrofone.classList.add(
-          "gravando"
-        );
-
-        console.log(
-          "Microfone ouvindo..."
-        );
-
-      }
-    );
-
-  }
+  // =========================
+  // RESULTADO VOZ
+  // =========================
 
   recognition.onresult =
     function(event) {
 
-      const texto =
-        event.results[0][0]
+      let textoTemp = "";
+
+      for (
+        let i = event.resultIndex;
+        i < event.results.length;
+        i++
+      ) {
+
+        textoTemp +=
+          event.results[i][0]
+          .transcript;
+
+      }
+
+      textoTemp =
+        textoTemp.toLowerCase();
+
+      console.log(
+        "🎤 Ouvindo:",
+        textoTemp
+      );
+
+      // =========================
+      // DETECTA PALAVRA CHAVE
+      // =========================
+
+      if (
+        !ouvindoComando &&
+        textoTemp.includes(
+          palavraChave
+        )
+      ) {
+
+        ouvindoComando = true;
+
+        textoCapturado = "";
+
+        console.log(
+          "🤖 Palavra-chave detectada"
+        );
+
+        return;
+
+      }
+
+      // =========================
+      // CAPTURA COMANDO
+      // =========================
+
+      if (ouvindoComando) {
+
+        textoCapturado =
+          textoTemp
+            .replace(
+              palavraChave,
+              ""
+            )
+            .trim();
+
+        const input =
+          document.getElementById(
+            "inputMensagem"
+          );
+
+        if (input) {
+
+          input.value =
+            textoCapturado;
+
+        }
+
+      }
+
+    };
+
+// =========================
+// CONTROLE SILÊNCIO
+// =========================
+
+let timeoutSilencio = null;
+
+// =========================
+// RESULTADO VOZ
+// =========================
+
+recognition.onresult =
+  function(event) {
+
+    let textoTemp = "";
+
+    for (
+      let i = event.resultIndex;
+      i < event.results.length;
+      i++
+    ) {
+
+      textoTemp +=
+        event.results[i][0]
         .transcript;
+
+    }
+
+    textoTemp =
+      textoTemp.toLowerCase();
+
+    console.log(
+      "🎤 Ouvindo:",
+      textoTemp
+    );
+
+    // =========================
+    // PALAVRA CHAVE
+    // =========================
+
+    if (
+      !ouvindoComando &&
+      textoTemp.includes(
+        palavraChave
+      )
+    ) {
+
+      ouvindoComando = true;
+
+      textoCapturado = "";
+
+      console.log(
+        "🤖 Palavra-chave detectada"
+      );
+
+      return;
+
+    }
+
+    // =========================
+    // CAPTURA TEXTO
+    // =========================
+
+    if (ouvindoComando) {
+
+      textoCapturado =
+        textoTemp
+          .replace(
+            palavraChave,
+            ""
+          )
+          .trim();
 
       const input =
         document.getElementById(
           "inputMensagem"
         );
 
-      input.value = texto;
+      if (input) {
 
-      enviarMensagem();
+        input.value =
+          textoCapturado;
 
-    };
+      }
+
+      // =========================
+      // RESET TIMER
+      // =========================
+
+      clearTimeout(
+        timeoutSilencio
+      );
+
+      timeoutSilencio =
+        setTimeout(
+          async () => {
+
+            if (
+              textoCapturado.trim() !== ""
+            ) {
+
+              console.log(
+                "📨 Enviando mensagem..."
+              );
+
+              ouvindoComando =
+                false;
+
+              await enviarMensagem();
+
+            }
+
+          },
+          2000 // 2 segundos sem falar
+        );
+
+    }
+
+  };
+  // =========================
+  // REINICIA AUTOMÁTICO
+  // =========================
 
   recognition.onend =
     function() {
 
-      const botaoMicrofone =
-        document.getElementById(
-          "btnMicrofone"
-        );
+      console.log(
+        "🔄 Reiniciando reconhecimento..."
+      );
 
-      if (botaoMicrofone) {
-
-        botaoMicrofone.classList.remove(
-          "gravando"
-        );
-
-      }
+      recognition.start();
 
     };
+
+  // =========================
+  // ERRO
+  // =========================
+
+  recognition.onerror =
+    function(event) {
+
+      console.error(
+        "ERRO MICROFONE:",
+        event.error
+      );
+
+    };
+
+  // =========================
+  // START
+  // =========================
+
+  recognition.start();
+
+  console.log(
+    "🎤 Escutando palavra-chave..."
+  );
 
 }
 
@@ -798,8 +1012,27 @@ if (SpeechRecognition) {
 
 function reiniciarChat() {
 
-  conversaAtual = [];
+  // cria nova conversa
+  const novaConversa = {
 
+    id: Date.now(),
+
+    titulo: "Nova conversa",
+
+    mensagens: []
+
+  };
+
+  // salva no histórico
+  historicoConversas.push(
+    novaConversa
+  );
+
+  // define conversa atual
+  conversaAtual =
+    novaConversa;
+
+  // limpa área do chat
   const chatArea =
     document.getElementById(
       "chatArea"
@@ -807,11 +1040,14 @@ function reiniciarChat() {
 
   if (chatArea) {
 
-    chatArea.innerHTML =
-      "";
+    chatArea.innerHTML = "";
 
   }
 
+  // atualiza sidebar
+  renderizarConversas();
+
+  // tela inicial
   const tela =
     document.getElementById(
       "telaInicial"
@@ -834,6 +1070,7 @@ function reiniciarChat() {
 
   }
 
+  // robô
   const robo =
     document.getElementById(
       "robo"
@@ -967,152 +1204,301 @@ async function falarTextoAzure(
 }
 
 // =========================
-// GEMINI TEXT TO SPEECH
+// GEMINI TEXT TO SPEECH (FIX FINAL)
 // =========================
 
-async function falarTextoGemini(
-  texto
-) {
-
+async function falarTextoGemini(texto) {
   try {
+    if (!texto || texto.trim() === "") return;
 
-    if (
-      !texto ||
-      texto.trim() === ""
-    ) return;
-
+    // PARA ÁUDIO ANTERIOR
     if (audioAtual) {
-
       audioAtual.pause();
-
+      audioAtual.currentTime = 0;
       audioAtual = null;
-
     }
 
-    const apiKey =
-      await carregarapiKeyGemini();
+    const apiKey = await carregarApiKeyGemini();
+    const textoLimpo = limparTextoParaFala(texto);
+    
+    // MODELO 3.1 TTS PREVIEW
+    // const model = "gemini-3.1-flash-tts-preview";
+    "gemini-2.5-flash-preview-tts" 
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-    texto =
-      limparTextoParaFala(
-        texto
-      );
-
-    const endpoint =
-      "https://ai.google.dev/gemini-api/docs/pricing?hl=pt-br#gemini-2.5-flash-preview-tts" 
-     apiKey;
-
-    const response =
-      await fetch(
-        endpoint,
-        {
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body: JSON.stringify({
-
-            contents: [
-              {
-                parts: [
-                  {
-                    text:
-                      texto
-                  }
-                ]
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: textoLimpo }]
+        }],
+        generationConfig: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: "Aoide" // Tente "Aoide" ou "Kore"
               }
-            ],
-
-            generationConfig: {
-
-              responseModalities: [
-                "AUDIO"
-              ]
-
             }
-
-          })
-
+          }
         }
-      );
+      })
+    });
 
-    if (!response.ok) {
+    const data = await response.json();
 
-      const erro =
-        await response.text();
-
-      console.error(
-        "ERRO GEMINI TTS:",
-        erro
-      );
-
+    // 1. Verifica se a API retornou erro de cota ou segurança
+    if (data.error) {
+      console.error("Erro na API Gemini:", data.error.message);
       return;
-
     }
 
-    const result =
-      await response.json();
+    // 2. Localiza a parte do áudio
+    const audioPart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
 
-    console.log(
-      "GEMINI TTS:",
-      result
-    );
+    if (audioPart && audioPart.inlineData && audioPart.inlineData.data) {
+      const audioBase64 = audioPart.inlineData.data;
+      
+      // O Gemini 3.1 geralmente envia áudio/pcm ou áudio/mp3. 
+      // Vamos usar audio/mp3 como padrão de fallback se o mimeType vier vazio.
+      const mimeType = audioPart.inlineData.mimeType || "audio/mp3";
+      
+      console.log("Áudio recebido, tipo:", mimeType);
 
-    const audioBase64 =
-      result?.candidates?.[0]
-      ?.content?.parts?.find(
-        p => p.inlineData
-      )?.inlineData?.data;
+      // 3. Monta a URL do áudio com segurança
+      const audioSrc = `data:${mimeType};base64,${audioBase64}`;
+      audioAtual = new Audio();
+      
+      // Evento de erro para nos dizer exatamente o que o navegador não gostou
+      audioAtual.onerror = (e) => {
+        console.error("Erro interno do elemento Audio:", e);
+      };
 
-    if (!audioBase64) {
+      audioAtual.src = audioSrc;
+      
+      // Toca o áudio
+      audioAtual.play().catch(e => {
+        console.warn("Reprodução automática bloqueada ou falhou:", e);
+      });
 
-      console.error(
-        "Áudio Gemini não encontrado."
-      );
-
-      return;
-
+      console.log("Gemini falando...");
+    } else {
+      console.error("A API não retornou dados de áudio (inlineData ausente). Verifique sua API Key ou limite de uso.");
     }
-
-    const audioBytes =
-      Uint8Array.from(
-        atob(audioBase64),
-        c => c.charCodeAt(0)
-      );
-
-    const audioBlob =
-      new Blob(
-        [audioBytes],
-        {
-          type: "audio/wav"
-        }
-      );
-
-    const audioUrl =
-      URL.createObjectURL(
-        audioBlob
-      );
-
-    audioAtual =
-      new Audio(audioUrl);
-
-    await audioAtual.play();
-
-    console.log(
-      "Gemini falando..."
-    );
 
   } catch (erro) {
+    console.error("ERRO CRÍTICO NO PROCESSO DE VOZ:", erro);
+  }
+}
+// ========================================
+// NOVA CONVERSA
+// ========================================
 
-    console.error(
-      "ERRO GEMINI VOZ:",
-      erro
+document
+  .getElementById(
+    "btnNovaConversa"
+  )
+  ?.addEventListener(
+    "click",
+    function() {
+
+      // SALVA CONVERSA ATUAL
+      conversas.push({
+
+        id: Date.now(),
+
+        mensagens: [
+          ...conversaAtual
+        ]
+
+      });
+
+      // LIMPA CHAT VISUAL
+      const chatArea =
+        document.getElementById(
+          "chatArea"
+        );
+
+      if (chatArea) {
+
+        chatArea.innerHTML = "";
+
+      }
+
+      // NOVA MEMÓRIA
+      conversaAtual = [];
+
+      console.log(
+        "Nova conversa criada"
+      );
+
+    }
+  );
+  // ========================================
+// ATUALIZA SIDEBAR
+// ========================================
+
+function atualizarListaConversas() {
+
+  const lista =
+    document.getElementById(
+      "listaConversas"
     );
 
-  }
+  if (!lista) return;
+
+  lista.innerHTML = "";
+
+  conversas.forEach(
+    (conversa, index) => {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.classList.add(
+        "conversa-item"
+      );
+
+      // TÍTULO
+      let titulo =
+        "Nova conversa";
+
+      const primeiraMensagem =
+        conversa.mensagens.find(
+          m => m.role === "user"
+        );
+
+      if (primeiraMensagem) {
+
+        titulo =
+          primeiraMensagem.content.substring(
+            0,
+            30
+          );
+
+      }
+
+      item.innerText =
+        titulo;
+
+      lista.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+// =========================
+// RENDERIZAR CONVERSAS
+// =========================
+
+function renderizarConversas() {
+
+  const lista =
+    document.getElementById(
+      "listaConversas"
+    );
+
+  if (!lista) return;
+
+  // limpa sidebar
+  lista.innerHTML = "";
+
+  historicoConversas.forEach(
+    (conversa, index) => {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.classList.add(
+        "conversa-item"
+      );
+
+      // conversa ativa
+      if (
+        conversa.mensagens ===
+        conversaAtual
+      ) {
+
+        item.classList.add(
+          "ativa"
+        );
+
+      }
+
+      // título
+      item.innerText =
+        conversa.titulo ||
+        `Conversa ${index + 1}`;
+
+      // clicar conversa
+      item.onclick =
+        function() {
+
+          abrirConversa(
+            conversa.id
+          );
+
+        };
+
+      lista.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+// =========================
+// ABRIR CONVERSA
+// =========================
+
+function abrirConversa(id) {
+
+  const conversa =
+    historicoConversas.find(
+      c => c.id === id
+    );
+
+  if (!conversa) return;
+
+  conversaAtual =
+    conversa.mensagens;
+
+  const chatArea =
+    document.getElementById(
+      "chatArea"
+    );
+
+  if (!chatArea) return;
+
+  // limpa tela
+  chatArea.innerHTML = "";
+
+  // recria mensagens
+  conversa.mensagens.forEach(
+    mensagem => {
+
+      adicionarMensagem(
+
+        mensagem.role === "user"
+          ? "usuario"
+          : "ia",
+
+        mensagem.content
+
+      );
+
+    }
+  );
+
+  renderizarConversas();
 
 }

@@ -32,156 +32,170 @@
   <div class="container">
 
     <!-- ========================= -->
-    <!-- DARK MODE -->
+    <!-- SIDEBAR -->
     <!-- ========================= -->
 
-    <div class="top-icons">
+    <div class="sidebar">
 
-      <div
-        class="moon-icon"
-        onclick="alternarTema()"
-      >
-        <i class="fa-solid fa-moon"></i>
-      </div>
+      <button id="btnNovaConversa">
+        <i class="fa-solid fa-plus"></i>
+        Nova conversa
+      </button>
+
+      <div id="listaConversas"></div>
 
     </div>
 
     <!-- ========================= -->
-    <!-- TOGGLE IA -->
+    <!-- MAIN AREA -->
     <!-- ========================= -->
 
-    <div class="toggle-wrapper">
+    <div class="main-area">
 
-      <div class="toggle-container">
+      <!-- ========================= -->
+      <!-- DARK MODE -->
+      <!-- ========================= -->
 
-        <span
-          class="toggle-label"
-          id="labelGPT"
+      <div class="top-icons">
+
+        <div
+          class="moon-icon"
+          onclick="alternarTema()"
         >
-          GPT
-        </span>
+          <i class="fa-solid fa-moon"></i>
+        </div>
 
-        <label class="switch">
+      </div>
 
-          <input
-            type="checkbox"
-            id="toggleIA"
+      <!-- ========================= -->
+      <!-- TOGGLE IA -->
+      <!-- ========================= -->
+
+      <div class="toggle-wrapper">
+
+        <div class="toggle-container">
+
+          <span
+            class="toggle-label"
+            id="labelGPT"
+          >
+            GPT
+          </span>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              id="toggleIA"
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+          <span
+            class="toggle-label"
+            id="labelGemini"
+          >
+            Gemini
+          </span>
+
+        </div>
+
+      </div>
+
+      <!-- ========================= -->
+      <!-- TELA INICIAL -->
+      <!-- ========================= -->
+
+      <div id="telaInicial">
+
+        <div class="cenario">
+
+          <!-- CASA -->
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/69/69524.png"
+            class="casa"
+            alt="Casa"
           >
 
-          <span class="slider"></span>
+          <!-- ROBÔ -->
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+            class="robo"
+            id="robo"
+            alt="Robô"
+          >
 
-        </label>
+        </div>
 
-        <span
-          class="toggle-label"
-          id="labelGemini"
-        >
-          Gemini
-        </span>
+        <h2>Bem-vindo ao BrokerAI</h2>
 
-      </div>
-
-    </div>
-
-    <!-- ========================= -->
-    <!-- TELA INICIAL -->
-    <!-- ========================= -->
-
-    <div id="telaInicial">
-
-      <div class="cenario">
-
-        <!-- CASA -->
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/69/69524.png"
-          class="casa"
-          alt="Casa"
-        >
-
-        <!-- ROBÔ -->
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
-          class="robo"
-          id="robo"
-          alt="Robô"
-        >
+        <p>Seu assistente inteligente imobiliário</p>
 
       </div>
 
-      <h2>Bem-vindo ao BrokerAI</h2>
+      <!-- ========================= -->
+      <!-- TOPO -->
+      <!-- ========================= -->
 
-      <p>Seu assistente inteligente imobiliário</p>
+      <header class="topo">
 
-    </div>
+        <div
+          class="logo-area"
+          onclick="reiniciarChat()"
+        >
 
-    <!-- ========================= -->
-    <!-- TOPO -->
-    <!-- ========================= -->
+          <i class="fa-solid fa-building"></i>
 
-    <header class="topo">
+          <h1>BrokerAI</h1>
 
-      <!-- LOGO -->
-      <div
-        class="logo-area"
-        onclick="reiniciarChat()"
-      >
+        </div>
 
-        <i class="fa-solid fa-building"></i>
+      </header>
 
-        <h1>BrokerAI</h1>
+      <!-- ========================= -->
+      <!-- CHAT -->
+      <!-- ========================= -->
 
-      </div>
+      <main
+        id="chatArea"
+        class="chat-area"
+      ></main>
 
-    </header>
-
-    <!-- ========================= -->
-    <!-- CHAT -->
-    <!-- ========================= -->
-
-    <main
-      id="chatArea"
-      class="chat-area"
-    ></main>
-
-    <!-- ========================= -->
-    <!-- INPUT -->
-    <!-- ========================= -->
-
-    <div class="chat-box">
-
-      <!-- BOTÃO + -->
-      <button
-        class="icon-button"
-        type="button"
-      >
-        <i class="fa-solid fa-plus"></i>
-      </button>
-
+      <!-- ========================= -->
       <!-- INPUT -->
-      <input
-        type="text"
-        id="inputMensagem"
-        placeholder="Pergunte algo..."
-        autocomplete="off"
-      >
+      <!-- ========================= -->
 
-      <!-- MICROFONE -->
-      <button
-        class="icon-button"
-        type="button"
-        id="btnMicrofone"
-      >
-        <i class="fa-solid fa-microphone"></i>
-      </button>
+      <div class="chat-box">
 
-      <!-- ENVIAR -->
-      <button
-        class="send-button"
-        type="button"
-        onclick="enviarMensagem()"
-      >
-        <i class="fa-solid fa-paper-plane"></i>
-      </button>
+        <!-- INPUT -->
+        <input
+          type="text"
+          id="inputMensagem"
+          placeholder="Pergunte algo..."
+          autocomplete="off"
+        >
+
+        <!-- MICROFONE -->
+        <button
+          class="icon-button"
+          type="button"
+          id="btnMicrofone"
+        >
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <!-- ENVIAR -->
+        <button
+          class="send-button"
+          type="button"
+          onclick="enviarMensagem()"
+        >
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+      </div>
 
     </div>
 
