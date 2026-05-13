@@ -949,3 +949,307 @@ RESPONSIVO
     font-size: 12px;
   }
 }
+# HTML CORRIGIDO — BROKERAI
+
+Substitua TODO o seu HTML atual por este:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>BrokerAI</title>
+
+  <!-- FONT AWESOME -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  >
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+  <!-- ========================= -->
+  <!-- CONTAINER -->
+  <!-- ========================= -->
+
+  <div class="container">
+
+    <!-- ========================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================= -->
+
+    <aside class="sidebar">
+
+      <button
+        id="btnNovaConversa"
+        class="btn-nova-conversa"
+      >
+        <i class="fa-solid fa-plus"></i>
+        <span>Nova conversa</span>
+      </button>
+
+      <!-- LISTA -->
+      <div id="listaConversas"></div>
+
+    </aside>
+
+    <!-- ========================= -->
+    <!-- MAIN -->
+    <!-- ========================= -->
+
+    <main class="main-area">
+
+      <!-- ========================= -->
+      <!-- TOPO -->
+      <!-- ========================= -->
+
+      <header class="topo">
+
+        <!-- LOGO -->
+        <div
+          class="logo-area"
+          onclick="reiniciarChat()"
+        >
+
+          <i class="fa-solid fa-building"></i>
+
+          <h1>BrokerAI</h1>
+
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="top-actions">
+
+          <!-- TOGGLE IA -->
+          <div class="toggle-wrapper">
+
+            <div class="toggle-container">
+
+              <span
+                class="toggle-label"
+                id="labelGPT"
+              >
+                GPT
+              </span>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  id="toggleIA"
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+              <span
+                class="toggle-label"
+                id="labelGemini"
+              >
+                Gemini
+              </span>
+
+            </div>
+
+          </div>
+
+          <!-- DARK MODE -->
+          <button
+            class="moon-icon"
+            onclick="alternarTema()"
+            type="button"
+          >
+            <i class="fa-solid fa-moon"></i>
+          </button>
+
+        </div>
+
+      </header>
+
+      <!-- ========================= -->
+      <!-- TELA INICIAL -->
+      <!-- ========================= -->
+
+      <section id="telaInicial">
+
+        <div class="cenario">
+
+          <!-- CASA -->
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/69/69524.png"
+            class="casa"
+            alt="Casa"
+          >
+
+          <!-- ROBÔ -->
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+            class="robo"
+            id="robo"
+            alt="Robô"
+          >
+
+        </div>
+
+        <h2>Bem-vindo ao BrokerAI</h2>
+
+        <p>
+          Seu assistente inteligente imobiliário
+        </p>
+
+      </section>
+
+      <!-- ========================= -->
+      <!-- CHAT -->
+      <!-- ========================= -->
+
+      <main
+        id="chatArea"
+        class="chat-area"
+      ></main>
+
+      <!-- ========================= -->
+      <!-- INPUT -->
+      <!-- ========================= -->
+
+      <div class="chat-box">
+
+        <!-- INPUT -->
+        <input
+          type="text"
+          id="inputMensagem"
+          placeholder="Pergunte algo..."
+          autocomplete="off"
+        >
+
+        <!-- MICROFONE -->
+        <button
+          class="icon-button"
+          type="button"
+          id="btnMicrofone"
+        >
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <!-- ENVIAR -->
+        <button
+          class="send-button"
+          type="button"
+          onclick="enviarMensagem()"
+        >
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- AZURE SPEECH -->
+  <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+
+  <!-- SCRIPT -->
+  <script src="script.js"></script>
+
+</body>
+</html>
+```
+
+---
+
+# AGORA ADICIONE ISSO NO FINAL DO SEU CSS
+
+/* ========================= */
+/* DARK MODE GLOBAL */
+/* ========================= */
+
+body.dark {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+body.dark .sidebar {
+  background: #111827;
+  border-right: 1px solid #1f2937;
+}
+
+body.dark .main-area {
+  background: #0f172a;
+}
+
+body.dark .topo {
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+}
+
+body.dark .chat-box {
+  background: #111827;
+  border-top: 1px solid #1f2937;
+}
+
+body.dark #inputMensagem {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+}
+
+body.dark #inputMensagem::placeholder {
+  color: #94a3b8;
+}
+
+body.dark .toggle-container {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark .moon-icon {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark .logo-area {
+  color: white;
+}
+
+body.dark .conversa-item {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark .conversa-item:hover {
+  background: #334155;
+}
+
+body.dark #telaInicial {
+  background: #0f172a;
+  color: white;
+}
+
+body.dark .chat-area {
+  background: #0f172a;
+}
+
+body.dark .mensagem.usuario {
+  background: #2563eb;
+  color: white;
+}
+
+body.dark .mensagem.ia {
+  background: #1e293b;
+  color: white;
+}

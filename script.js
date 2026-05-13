@@ -8,7 +8,16 @@ let historicoConversas = [];
 // CONVERSA ATUAL
 // ========================================
 
-let conversaAtual = null;
+let conversaAtual = {
+  id: Date.now(),
+  titulo: "Nova conversa",
+  mensagens: []
+};
+
+// adiciona primeira conversa
+historicoConversas.push(
+  conversaAtual
+);
 
 // =========================
 // MODELO ATUAL
@@ -17,25 +26,41 @@ let conversaAtual = null;
 let modeloAtual = "gpt";
 
 // =========================
+// CONTROLE DE ÁUDIO
+// =========================
+
+let audioAtual = null;
+
+// =========================
 // PROMPT SISTEMA
 // =========================
 
 const promptSistema = `
 Você é o BrokerAI.
 
+Seu objetivo:
+- Ajudar usuários em conversas inteligentes
+- Agir como uma IA moderna
+- Responder de forma natural
+- Ser rápido e objetivo
+- Manter contexto da conversa atual
+
 Regras:
-- Responda em português do Brasil
-- Seja claro, direto e profissional
-- Use linguagem simples
-- Dê sugestões práticas
-- Não invente informações
+- Responda sempre em português do Brasil
+- Nunca invente informações
+- Seja claro e organizado
+- Use linguagem moderna e profissional
+- Explique de forma simples
+- Use listas quando necessário
+- Evite respostas robóticas
+- Seja útil e direto
+
+Estilo:
+- Conversa fluida
+- Inteligente
+- Profissional
+- Natural
 `;
-
-// =========================
-// CONTROLE DE ÁUDIO
-// =========================
-
-let audioAtual = null;
 
 // =========================
 // ENVIAR MENSAGEM
@@ -56,22 +81,35 @@ async function enviarMensagem() {
   if (texto === "") return;
 
   // animação inicial
-  if (conversaAtual.length === 0) {
+  if (
+    conversaAtual.mensagens.length === 0
+  ) {
 
     iniciarAnimacao();
 
   }
 
+  // salva mensagem usuário
   conversaAtual.mensagens.push({
-  role: "user",
-  content: texto
-});
 
-// salva na memória global
-memoriaGlobal.push({
-  role: "user",
-  content: texto
-});
+    role: "user",
+
+    content: texto
+
+  });
+
+  // define título automático
+  if (
+    conversaAtual.titulo ===
+    "Nova conversa"
+  ) {
+
+    conversaAtual.titulo =
+      texto.substring(0, 30);
+
+    renderizarConversas();
+
+  }
 
   adicionarMensagem(
     "usuario",
@@ -80,7 +118,7 @@ memoriaGlobal.push({
 
   input.value = "";
 
-  // mensagem IA
+  // cria mensagem IA
   const msgIA =
     adicionarMensagem(
       "ia",
@@ -91,26 +129,32 @@ memoriaGlobal.push({
 
     let resposta = "";
 
-    // =========================
-    // ESCOLHE MODELO
-    // =========================
-
-    if (modeloAtual === "gpt") {
+    // GPT
+    if (
+      modeloAtual === "gpt"
+    ) {
 
       resposta =
         await chamarIA();
 
-    } else {
+    }
+
+    // GEMINI
+    else {
 
       resposta =
         await chamarGemini();
 
     }
 
+    // salva resposta IA
     conversaAtual.mensagens.push({
-  role: "assistant",
-  content: resposta
-});
+
+      role: "assistant",
+
+      content: resposta
+
+    });
 
     // efeito digitando
     efeitoDigitando(
@@ -118,11 +162,10 @@ memoriaGlobal.push({
       resposta
     );
 
-    // =========================
-    // VOZ AUTOMÁTICA
-    // =========================
-
-    if (modeloAtual === "gpt") {
+    // voz
+    if (
+      modeloAtual === "gpt"
+    ) {
 
       falarTextoAzure(
         resposta
@@ -139,12 +182,12 @@ memoriaGlobal.push({
   } catch (erro) {
 
     console.error(
-      "ERRO GERAL:",
+      "ERRO:",
       erro
     );
 
     msgIA.innerText =
-      "Erro ao conectar com IA.";
+      "Erro ao conectar IA.";
 
   }
 
@@ -164,7 +207,7 @@ function adicionarMensagem(
       "chatArea"
     );
 
-  if (!chatArea) return null;
+  if (!chatArea) return;
 
   const msg =
     document.createElement(
@@ -176,9 +219,12 @@ function adicionarMensagem(
     tipo
   );
 
-  msg.innerText = texto;
+  msg.innerText =
+    texto;
 
-  chatArea.appendChild(msg);
+  chatArea.appendChild(
+    msg
+  );
 
   atualizarScroll();
 
@@ -194,8 +240,6 @@ function efeitoDigitando(
   elemento,
   texto
 ) {
-
-  if (!elemento) return;
 
   elemento.innerText = "";
 
@@ -214,7 +258,9 @@ function efeitoDigitando(
 
       atualizarScroll();
 
-      if (i >= texto.length) {
+      if (
+        i >= texto.length
+      ) {
 
         clearInterval(
           intervalo
@@ -223,44 +269,6 @@ function efeitoDigitando(
       }
 
     }, 15);
-
-}
-
-// =========================
-// LIMPAR TEXTO
-// =========================
-
-function limparTextoParaFala(
-  texto
-) {
-
-  return texto
-
-    // remove emojis
-    .replace(
-      /[\u{1F300}-\u{1FAFF}]/gu,
-      ""
-    )
-
-    // remove markdown
-    .replace(
-      /[*#_~`>|<{}\[\]\\\/+=]/g,
-      ""
-    )
-
-    // remove espaços excessivos
-    .replace(/\s+/g, " ")
-
-    // separa palavras grudadas
-    .replace(
-      /([a-záàâãéèêíïóôõöúç])([A-ZÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇ])/g,
-      "$1 $2"
-    )
-
-    // mantém acentos corretos
-    .normalize("NFC")
-
-    .trim();
 
 }
 
@@ -287,7 +295,7 @@ function atualizarScroll() {
 }
 
 // =========================
-// API KEYS
+// API GPT
 // =========================
 
 async function carregarApiKeyGPT() {
@@ -306,16 +314,17 @@ async function carregarApiKeyGPT() {
 
   } catch (erro) {
 
-    console.error(
-      "ERRO API GPT:",
-      erro
-    );
+    console.error(erro);
 
     return null;
 
   }
 
 }
+
+// =========================
+// API GEMINI
+// =========================
 
 async function carregarApiKeyGemini() {
 
@@ -333,10 +342,7 @@ async function carregarApiKeyGemini() {
 
   } catch (erro) {
 
-    console.error(
-      "ERRO API GEMINI:",
-      erro
-    );
+    console.error(erro);
 
     return null;
 
@@ -357,17 +363,28 @@ async function chamarIA() {
 
     if (!apiKey) {
 
-      return "API Key GPT não encontrada.";
+      return "API GPT não encontrada.";
 
     }
 
     const endpoint =
       "https://georg-ml7854jc-swedencentral.cognitiveservices.azure.com";
 
+    const historico =
+      conversaAtual.mensagens
+      .map(
+        m =>
+          `${m.role === "user"
+            ? "Usuário"
+            : "IA"}: ${m.content}`
+      )
+      .join("\n");
+
     const resposta =
       await fetch(
         `${endpoint}/openai/responses?api-version=2025-04-01-preview`,
         {
+
           method: "POST",
 
           headers: {
@@ -388,15 +405,10 @@ async function chamarIA() {
             input:
               promptSistema +
               "\n\n" +
-              conversaAtual.map(
-                m =>
-                  `${m.role === "user"
-                    ? "Usuário"
-                    : "IA"}: ${m.content}`
-              ).join("\n"),
+              historico,
 
             max_output_tokens:
-              300
+              500
 
           })
 
@@ -405,22 +417,12 @@ async function chamarIA() {
 
     if (!resposta.ok) {
 
-      const erroTexto =
-        await resposta.text();
-
-      console.error(
-        "ERRO GPT:",
-        erroTexto
-      );
-
       return "Erro no GPT.";
 
     }
 
     const data =
       await resposta.json();
-    
-    console.log(data);
 
     const mensagem =
       data.output.find(
@@ -440,12 +442,9 @@ async function chamarIA() {
 
   } catch (erro) {
 
-    console.error(
-      "ERRO GPT:",
-      erro
-    );
+    console.error(erro);
 
-    return "Falha ao conectar GPT.";
+    return "Falha GPT.";
 
   }
 
@@ -464,12 +463,19 @@ async function chamarGemini() {
 
     if (!apiKey) {
 
-      return "API Key Gemini não encontrada.";
+      return "API Gemini não encontrada.";
 
     }
 
-    const historicoLimitado =
-      conversaAtual.slice(-8);
+    const historico =
+      conversaAtual.mensagens
+      .map(
+        m =>
+          `${m.role === "user"
+            ? "Usuário"
+            : "IA"}: ${m.content}`
+      )
+      .join("\n");
 
     const model =
       "gemini-2.5-flash";
@@ -500,25 +506,11 @@ async function chamarGemini() {
                     text:
                       promptSistema +
                       "\n\n" +
-                      historicoLimitado.map(
-                        m =>
-                          `${m.role === "user"
-                            ? "Usuário"
-                            : "IA"}: ${m.content}`
-                      ).join("\n")
+                      historico
                   }
                 ]
               }
-            ],
-
-            generationConfig: {
-
-              temperature: 0.7,
-
-              maxOutputTokens:
-                2000
-
-            }
+            ]
 
           })
 
@@ -527,40 +519,23 @@ async function chamarGemini() {
 
     if (!response.ok) {
 
-      const erroTexto =
-        await response.text();
-
-      console.error(
-        "ERRO GEMINI:",
-        erroTexto
-      );
-
-      return "Erro no Gemini.";
+      return "Erro Gemini.";
 
     }
 
     const data =
       await response.json();
 
-    const partes =
-      data?.candidates?.[0]
-      ?.content?.parts || [];
-
-    const texto =
-      partes.map(
-        p => p.text
-      ).join("");
-
-    return texto;
+    return data
+      ?.candidates?.[0]
+      ?.content?.parts?.[0]
+      ?.text || "Sem resposta.";
 
   } catch (erro) {
 
-    console.error(
-      "ERRO GEMINI:",
-      erro
-    );
+    console.error(erro);
 
-    return "Falha ao conectar Gemini.";
+    return "Falha Gemini.";
 
   }
 
@@ -581,7 +556,9 @@ if (inputMensagem) {
     "keypress",
     function(e) {
 
-      if (e.key === "Enter") {
+      if (
+        e.key === "Enter"
+      ) {
 
         e.preventDefault();
 
@@ -595,705 +572,8 @@ if (inputMensagem) {
 }
 
 // =========================
-// WINDOW LOAD
-// =========================
-
-window.onload = function() {
-
-  const tema =
-    localStorage.getItem(
-      "tema"
-    );
-
-  if (tema === "dark") {
-
-    document.body.classList.add(
-      "dark"
-    );
-
-  }
-
-  const toggle =
-    document.getElementById(
-      "toggleIA"
-    );
-
-  if (toggle) {
-
-    toggle.checked =
-      false;
-
-    modeloAtual =
-      "gpt";
-
-    toggle.addEventListener(
-      "change",
-      () => {
-
-        if (toggle.checked) {
-
-          modeloAtual =
-            "gemini";
-
-          console.log(
-            "Gemini ativado"
-          );
-
-        } else {
-
-          modeloAtual =
-            "gpt";
-
-          console.log(
-            "GPT ativado"
-          );
-
-        }
-
-      }
-    );
-
-  }
-
-  atualizarScroll();
-
-};
-
-// =========================
-// DARK MODE
-// =========================
-
-function alternarTema() {
-
-  document.body.classList.toggle(
-    "dark"
-  );
-
-  localStorage.setItem(
-
-    "tema",
-
-    document.body.classList.contains(
-      "dark"
-    )
-      ? "dark"
-      : "light"
-
-  );
-
-}
-
-// =========================
-// ANIMAÇÃO
-// =========================
-
-function iniciarAnimacao() {
-
-  const robo =
-    document.getElementById(
-      "robo"
-    );
-
-  const tela =
-    document.getElementById(
-      "telaInicial"
-    );
-
-  if (!robo || !tela)
-    return;
-
-  robo.style.transform =
-    "translateX(320px)";
-
-  setTimeout(() => {
-
-    tela.style.opacity =
-      "0";
-
-    tela.style.pointerEvents =
-      "none";
-
-  }, 1800);
-
-  setTimeout(() => {
-
-    tela.style.display =
-      "none";
-
-  }, 3000);
-
-}
-
-// =========================
-// MICROFONE INTELIGENTE
-// =========================
-
-const SpeechRecognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
-
-let recognition = null;
-
-// =========================
-// CONFIG
-// =========================
-
-const palavraChave =
-  "broker";
-
-let ouvindoComando =
-  false;
-
-let textoCapturado =
-  "";
-
-// =========================
-// INICIAR
-// =========================
-
-if (SpeechRecognition) {
-
-  recognition =
-    new SpeechRecognition();
-
-  recognition.lang =
-    "pt-BR";
-
-  recognition.continuous =
-    true;
-
-  recognition.interimResults =
-    true;
-
-  // =========================
-  // RESULTADO VOZ
-  // =========================
-
-  recognition.onresult =
-    function(event) {
-
-      let textoTemp = "";
-
-      for (
-        let i = event.resultIndex;
-        i < event.results.length;
-        i++
-      ) {
-
-        textoTemp +=
-          event.results[i][0]
-          .transcript;
-
-      }
-
-      textoTemp =
-        textoTemp.toLowerCase();
-
-      console.log(
-        "🎤 Ouvindo:",
-        textoTemp
-      );
-
-      // =========================
-      // DETECTA PALAVRA CHAVE
-      // =========================
-
-      if (
-        !ouvindoComando &&
-        textoTemp.includes(
-          palavraChave
-        )
-      ) {
-
-        ouvindoComando = true;
-
-        textoCapturado = "";
-
-        console.log(
-          "🤖 Palavra-chave detectada"
-        );
-
-        return;
-
-      }
-
-      // =========================
-      // CAPTURA COMANDO
-      // =========================
-
-      if (ouvindoComando) {
-
-        textoCapturado =
-          textoTemp
-            .replace(
-              palavraChave,
-              ""
-            )
-            .trim();
-
-        const input =
-          document.getElementById(
-            "inputMensagem"
-          );
-
-        if (input) {
-
-          input.value =
-            textoCapturado;
-
-        }
-
-      }
-
-    };
-
-// =========================
-// CONTROLE SILÊNCIO
-// =========================
-
-let timeoutSilencio = null;
-
-// =========================
-// RESULTADO VOZ
-// =========================
-
-recognition.onresult =
-  function(event) {
-
-    let textoTemp = "";
-
-    for (
-      let i = event.resultIndex;
-      i < event.results.length;
-      i++
-    ) {
-
-      textoTemp +=
-        event.results[i][0]
-        .transcript;
-
-    }
-
-    textoTemp =
-      textoTemp.toLowerCase();
-
-    console.log(
-      "🎤 Ouvindo:",
-      textoTemp
-    );
-
-    // =========================
-    // PALAVRA CHAVE
-    // =========================
-
-    if (
-      !ouvindoComando &&
-      textoTemp.includes(
-        palavraChave
-      )
-    ) {
-
-      ouvindoComando = true;
-
-      textoCapturado = "";
-
-      console.log(
-        "🤖 Palavra-chave detectada"
-      );
-
-      return;
-
-    }
-
-    // =========================
-    // CAPTURA TEXTO
-    // =========================
-
-    if (ouvindoComando) {
-
-      textoCapturado =
-        textoTemp
-          .replace(
-            palavraChave,
-            ""
-          )
-          .trim();
-
-      const input =
-        document.getElementById(
-          "inputMensagem"
-        );
-
-      if (input) {
-
-        input.value =
-          textoCapturado;
-
-      }
-
-      // =========================
-      // RESET TIMER
-      // =========================
-
-      clearTimeout(
-        timeoutSilencio
-      );
-
-      timeoutSilencio =
-        setTimeout(
-          async () => {
-
-            if (
-              textoCapturado.trim() !== ""
-            ) {
-
-              console.log(
-                "📨 Enviando mensagem..."
-              );
-
-              ouvindoComando =
-                false;
-
-              await enviarMensagem();
-
-            }
-
-          },
-          2000 // 2 segundos sem falar
-        );
-
-    }
-
-  };
-  // =========================
-  // REINICIA AUTOMÁTICO
-  // =========================
-
-  recognition.onend =
-    function() {
-
-      console.log(
-        "🔄 Reiniciando reconhecimento..."
-      );
-
-      recognition.start();
-
-    };
-
-  // =========================
-  // ERRO
-  // =========================
-
-  recognition.onerror =
-    function(event) {
-
-      console.error(
-        "ERRO MICROFONE:",
-        event.error
-      );
-
-    };
-
-  // =========================
-  // START
-  // =========================
-
-  recognition.start();
-
-  console.log(
-    "🎤 Escutando palavra-chave..."
-  );
-
-}
-
-// =========================
-// REINICIAR CHAT
-// =========================
-
-function reiniciarChat() {
-
-  // cria nova conversa
-  const novaConversa = {
-
-    id: Date.now(),
-
-    titulo: "Nova conversa",
-
-    mensagens: []
-
-  };
-
-  // salva no histórico
-  historicoConversas.push(
-    novaConversa
-  );
-
-  // define conversa atual
-  conversaAtual =
-    novaConversa;
-
-  // limpa área do chat
-  const chatArea =
-    document.getElementById(
-      "chatArea"
-    );
-
-  if (chatArea) {
-
-    chatArea.innerHTML = "";
-
-  }
-
-  // atualiza sidebar
-  renderizarConversas();
-
-  // tela inicial
-  const tela =
-    document.getElementById(
-      "telaInicial"
-    );
-
-  if (tela) {
-
-    tela.style.display =
-      "flex";
-
-    setTimeout(() => {
-
-      tela.style.opacity =
-        "1";
-
-      tela.style.pointerEvents =
-        "all";
-
-    }, 50);
-
-  }
-
-  // robô
-  const robo =
-    document.getElementById(
-      "robo"
-    );
-
-  if (robo) {
-
-    robo.style.transform =
-      "translateX(0px)";
-
-  }
-
-}
-
-// =========================
-// AZURE TEXT TO SPEECH
-// =========================
-
-async function falarTextoAzure(
-  texto
-) {
-
-  try {
-
-    if (
-      !texto ||
-      texto.trim() === ""
-    ) return;
-
-    if (audioAtual) {
-
-      audioAtual.pause();
-
-      audioAtual = null;
-
-    }
-
-    const res =
-      await fetch(
-        "apiKey.json"
-      );
-
-    const data =
-      await res.json();
-
-    const speechKey =
-      data.apiKeyGPT;
-
-    const endpoint =
-      "https://swedencentral.tts.speech.microsoft.com/cognitiveservices/v1";
-
-    texto =
-      limparTextoParaFala(
-        texto
-      );
-
-    const ssml = `
-<speak version='1.0' xml:lang='pt-BR'>
-    <voice name='pt-BR-AntonioNeural'>
-        <prosody rate="1.03" pitch="-4%">
-            ${texto}
-        </prosody>
-    </voice>
-</speak>
-`;
-
-    const response =
-      await fetch(
-        endpoint,
-        {
-          method: "POST",
-
-          headers: {
-
-            "Ocp-Apim-Subscription-Key":
-              speechKey,
-
-            "Content-Type":
-              "application/ssml+xml",
-
-            "X-Microsoft-OutputFormat":
-              "audio-24khz-48kbitrate-mono-mp3"
-
-          },
-
-          body: ssml
-
-        }
-      );
-
-    if (!response.ok) {
-
-      const erro =
-        await response.text();
-
-      console.error(
-        "ERRO AZURE:",
-        erro
-      );
-
-      return;
-
-    }
-
-    const audioBlob =
-      await response.blob();
-
-    const audioUrl =
-      URL.createObjectURL(
-        audioBlob
-      );
-
-    audioAtual =
-      new Audio(audioUrl);
-
-    audioAtual.play();
-
-    console.log(
-      "Azure falando..."
-    );
-
-  } catch (erro) {
-
-    console.error(
-      "ERRO VOZ AZURE:",
-      erro
-    );
-
-  }
-
-}
-
-// =========================
-// GEMINI TEXT TO SPEECH (FIX FINAL)
-// =========================
-
-async function falarTextoGemini(texto) {
-  try {
-    if (!texto || texto.trim() === "") return;
-
-    // PARA ÁUDIO ANTERIOR
-    if (audioAtual) {
-      audioAtual.pause();
-      audioAtual.currentTime = 0;
-      audioAtual = null;
-    }
-
-    const apiKey = await carregarApiKeyGemini();
-    const textoLimpo = limparTextoParaFala(texto);
-    
-    // MODELO 3.1 TTS PREVIEW
-    // const model = "gemini-3.1-flash-tts-preview";
-    "gemini-2.5-flash-preview-tts" 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: textoLimpo }]
-        }],
-        generationConfig: {
-          responseModalities: ["AUDIO"],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: {
-                voiceName: "Aoide" // Tente "Aoide" ou "Kore"
-              }
-            }
-          }
-        }
-      })
-    });
-
-    const data = await response.json();
-
-    // 1. Verifica se a API retornou erro de cota ou segurança
-    if (data.error) {
-      console.error("Erro na API Gemini:", data.error.message);
-      return;
-    }
-
-    // 2. Localiza a parte do áudio
-    const audioPart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-
-    if (audioPart && audioPart.inlineData && audioPart.inlineData.data) {
-      const audioBase64 = audioPart.inlineData.data;
-      
-      // O Gemini 3.1 geralmente envia áudio/pcm ou áudio/mp3. 
-      // Vamos usar audio/mp3 como padrão de fallback se o mimeType vier vazio.
-      const mimeType = audioPart.inlineData.mimeType || "audio/mp3";
-      
-      console.log("Áudio recebido, tipo:", mimeType);
-
-      // 3. Monta a URL do áudio com segurança
-      const audioSrc = `data:${mimeType};base64,${audioBase64}`;
-      audioAtual = new Audio();
-      
-      // Evento de erro para nos dizer exatamente o que o navegador não gostou
-      audioAtual.onerror = (e) => {
-        console.error("Erro interno do elemento Audio:", e);
-      };
-
-      audioAtual.src = audioSrc;
-      
-      // Toca o áudio
-      audioAtual.play().catch(e => {
-        console.warn("Reprodução automática bloqueada ou falhou:", e);
-      });
-
-      console.log("Gemini falando...");
-    } else {
-      console.error("A API não retornou dados de áudio (inlineData ausente). Verifique sua API Key ou limite de uso.");
-    }
-
-  } catch (erro) {
-    console.error("ERRO CRÍTICO NO PROCESSO DE VOZ:", erro);
-  }
-}
-// ========================================
 // NOVA CONVERSA
-// ========================================
+// =========================
 
 document
   .getElementById(
@@ -1303,18 +583,24 @@ document
     "click",
     function() {
 
-      // SALVA CONVERSA ATUAL
-      conversas.push({
+      // cria nova conversa
+      conversaAtual = {
 
         id: Date.now(),
 
-        mensagens: [
-          ...conversaAtual
-        ]
+        titulo:
+          "Nova conversa",
 
-      });
+        mensagens: []
 
-      // LIMPA CHAT VISUAL
+      };
+
+      // salva no histórico
+      historicoConversas.push(
+        conversaAtual
+      );
+
+      // limpa chat
       const chatArea =
         document.getElementById(
           "chatArea"
@@ -1322,12 +608,13 @@ document
 
       if (chatArea) {
 
-        chatArea.innerHTML = "";
+        chatArea.innerHTML =
+          "";
 
       }
 
-      // NOVA MEMÓRIA
-      conversaAtual = [];
+      // renderiza sidebar
+      renderizarConversas();
 
       console.log(
         "Nova conversa criada"
@@ -1335,65 +622,9 @@ document
 
     }
   );
-  // ========================================
-// ATUALIZA SIDEBAR
-// ========================================
 
-function atualizarListaConversas() {
-
-  const lista =
-    document.getElementById(
-      "listaConversas"
-    );
-
-  if (!lista) return;
-
-  lista.innerHTML = "";
-
-  conversas.forEach(
-    (conversa, index) => {
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.classList.add(
-        "conversa-item"
-      );
-
-      // TÍTULO
-      let titulo =
-        "Nova conversa";
-
-      const primeiraMensagem =
-        conversa.mensagens.find(
-          m => m.role === "user"
-        );
-
-      if (primeiraMensagem) {
-
-        titulo =
-          primeiraMensagem.content.substring(
-            0,
-            30
-          );
-
-      }
-
-      item.innerText =
-        titulo;
-
-      lista.appendChild(
-        item
-      );
-
-    }
-  );
-
-}
 // =========================
-// RENDERIZAR CONVERSAS
+// RENDERIZAR SIDEBAR
 // =========================
 
 function renderizarConversas() {
@@ -1405,11 +636,10 @@ function renderizarConversas() {
 
   if (!lista) return;
 
-  // limpa sidebar
   lista.innerHTML = "";
 
   historicoConversas.forEach(
-    (conversa, index) => {
+    (conversa) => {
 
       const item =
         document.createElement(
@@ -1422,8 +652,8 @@ function renderizarConversas() {
 
       // conversa ativa
       if (
-        conversa.mensagens ===
-        conversaAtual
+        conversa.id ===
+        conversaAtual.id
       ) {
 
         item.classList.add(
@@ -1432,12 +662,10 @@ function renderizarConversas() {
 
       }
 
-      // título
       item.innerText =
-        conversa.titulo ||
-        `Conversa ${index + 1}`;
+        conversa.titulo;
 
-      // clicar conversa
+      // abrir conversa
       item.onclick =
         function() {
 
@@ -1470,7 +698,7 @@ function abrirConversa(id) {
   if (!conversa) return;
 
   conversaAtual =
-    conversa.mensagens;
+    conversa;
 
   const chatArea =
     document.getElementById(
@@ -1479,10 +707,8 @@ function abrirConversa(id) {
 
   if (!chatArea) return;
 
-  // limpa tela
   chatArea.innerHTML = "";
 
-  // recria mensagens
   conversa.mensagens.forEach(
     mensagem => {
 
@@ -1501,4 +727,154 @@ function abrirConversa(id) {
 
   renderizarConversas();
 
+}
+
+// =========================
+// WINDOW LOAD
+// =========================
+
+window.onload = function() {
+
+  renderizarConversas();
+
+  const toggle =
+    document.getElementById(
+      "toggleIA"
+    );
+
+  if (toggle) {
+
+    toggle.checked =
+      false;
+
+    modeloAtual =
+      "gpt";
+
+    toggle.addEventListener(
+      "change",
+      () => {
+
+        if (
+          toggle.checked
+        ) {
+
+          modeloAtual =
+            "gemini";
+
+        } else {
+
+          modeloAtual =
+            "gpt";
+
+        }
+
+      }
+    );
+
+  }
+
+};
+
+// =========================
+// ANIMAÇÃO
+// =========================
+
+function iniciarAnimacao() {
+
+  const robo =
+    document.getElementById(
+      "robo"
+    );
+
+  const tela =
+    document.getElementById(
+      "telaInicial"
+    );
+
+  if (
+    !robo ||
+    !tela
+  ) return;
+
+  robo.style.transform =
+    "translateX(320px)";
+
+  setTimeout(() => {
+
+    tela.style.opacity =
+      "0";
+
+    tela.style.pointerEvents =
+      "none";
+
+  }, 1800);
+
+  setTimeout(() => {
+
+    tela.style.display =
+      "none";
+
+  }, 3000);
+
+}
+/* =========================
+SIDEBAR DARK MODE
+========================= */
+
+.sidebar {
+  background: #ffffff;
+  transition: 0.3s;
+}
+
+body.dark .sidebar {
+  background: #111827;
+}
+
+/* =========================
+ÁREA INPUT DARK MODE
+========================= */
+
+.input-area {
+  background: #ffffff;
+  transition: 0.3s;
+}
+
+body.dark .input-area {
+  background: #111827;
+}
+
+/* =========================
+INPUT DARK MODE
+========================= */
+
+#inputMensagem {
+  background: #f1f1f1;
+  color: #000;
+  transition: 0.3s;
+}
+
+body.dark #inputMensagem {
+  background: #1f2937;
+  color: #fff;
+}
+
+/* =========================
+BOTÕES DARK MODE
+========================= */
+
+body.dark .conversa-item {
+  background: #1f2937;
+  color: #fff;
+}
+
+body.dark .conversa-item:hover {
+  background: #2b3547;
+}
+
+/* =========================
+PLACEHOLDER
+========================= */
+
+body.dark #inputMensagem::placeholder {
+  color: #9ca3af;
 }

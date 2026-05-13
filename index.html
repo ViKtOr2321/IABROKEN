@@ -1,3 +1,8 @@
+# HTML CORRIGIDO — BROKERAI
+
+Substitua TODO o seu HTML atual por este:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -35,80 +40,100 @@
     <!-- SIDEBAR -->
     <!-- ========================= -->
 
-    <div class="sidebar">
+    <aside class="sidebar">
 
-      <button id="btnNovaConversa">
+      <button
+        id="btnNovaConversa"
+        class="btn-nova-conversa"
+      >
         <i class="fa-solid fa-plus"></i>
-        Nova conversa
+        <span>Nova conversa</span>
       </button>
 
+      <!-- LISTA -->
       <div id="listaConversas"></div>
 
-    </div>
+    </aside>
 
     <!-- ========================= -->
-    <!-- MAIN AREA -->
+    <!-- MAIN -->
     <!-- ========================= -->
 
-    <div class="main-area">
+    <main class="main-area">
 
       <!-- ========================= -->
-      <!-- DARK MODE -->
+      <!-- TOPO -->
       <!-- ========================= -->
 
-      <div class="top-icons">
+      <header class="topo">
 
+        <!-- LOGO -->
         <div
-          class="moon-icon"
-          onclick="alternarTema()"
+          class="logo-area"
+          onclick="reiniciarChat()"
         >
-          <i class="fa-solid fa-moon"></i>
-        </div>
 
-      </div>
+          <i class="fa-solid fa-building"></i>
 
-      <!-- ========================= -->
-      <!-- TOGGLE IA -->
-      <!-- ========================= -->
-
-      <div class="toggle-wrapper">
-
-        <div class="toggle-container">
-
-          <span
-            class="toggle-label"
-            id="labelGPT"
-          >
-            GPT
-          </span>
-
-          <label class="switch">
-
-            <input
-              type="checkbox"
-              id="toggleIA"
-            >
-
-            <span class="slider"></span>
-
-          </label>
-
-          <span
-            class="toggle-label"
-            id="labelGemini"
-          >
-            Gemini
-          </span>
+          <h1>BrokerAI</h1>
 
         </div>
 
-      </div>
+        <!-- AÇÕES -->
+        <div class="top-actions">
+
+          <!-- TOGGLE IA -->
+          <div class="toggle-wrapper">
+
+            <div class="toggle-container">
+
+              <span
+                class="toggle-label"
+                id="labelGPT"
+              >
+                GPT
+              </span>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  id="toggleIA"
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+              <span
+                class="toggle-label"
+                id="labelGemini"
+              >
+                Gemini
+              </span>
+
+            </div>
+
+          </div>
+
+          <!-- DARK MODE -->
+          <button
+            class="moon-icon"
+            onclick="alternarTema()"
+            type="button"
+          >
+            <i class="fa-solid fa-moon"></i>
+          </button>
+
+        </div>
+
+      </header>
 
       <!-- ========================= -->
       <!-- TELA INICIAL -->
       <!-- ========================= -->
 
-      <div id="telaInicial">
+      <section id="telaInicial">
 
         <div class="cenario">
 
@@ -131,28 +156,11 @@
 
         <h2>Bem-vindo ao BrokerAI</h2>
 
-        <p>Seu assistente inteligente imobiliário</p>
+        <p>
+          Seu assistente inteligente imobiliário
+        </p>
 
-      </div>
-
-      <!-- ========================= -->
-      <!-- TOPO -->
-      <!-- ========================= -->
-
-      <header class="topo">
-
-        <div
-          class="logo-area"
-          onclick="reiniciarChat()"
-        >
-
-          <i class="fa-solid fa-building"></i>
-
-          <h1>BrokerAI</h1>
-
-        </div>
-
-      </header>
+      </section>
 
       <!-- ========================= -->
       <!-- CHAT -->
@@ -197,7 +205,7 @@
 
       </div>
 
-    </div>
+    </main>
 
   </div>
 
@@ -209,3 +217,110 @@
 
 </body>
 </html>
+```
+
+---
+
+# AGORA ADICIONE ISSO NO FINAL DO SEU CSS
+
+```css
+/* ========================= */
+/* DARK MODE GLOBAL */
+/* ========================= */
+
+body.dark {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+body.dark .sidebar {
+  background: #111827;
+  border-right: 1px solid #1f2937;
+}
+
+body.dark .main-area {
+  background: #0f172a;
+}
+
+body.dark .topo {
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+}
+
+body.dark .chat-box {
+  background: #111827;
+  border-top: 1px solid #1f2937;
+}
+
+body.dark #inputMensagem {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+}
+
+body.dark #inputMensagem::placeholder {
+  color: #94a3b8;
+}
+
+body.dark .toggle-container {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark .moon-icon {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark .logo-area {
+  color: white;
+}
+
+body.dark .conversa-item {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark .conversa-item:hover {
+  background: #334155;
+}
+
+body.dark #telaInicial {
+  background: #0f172a;
+  color: white;
+}
+
+body.dark .chat-area {
+  background: #0f172a;
+}
+
+body.dark .mensagem.usuario {
+  background: #2563eb;
+  color: white;
+}
+
+body.dark .mensagem.ia {
+  background: #1e293b;
+  color: white;
+}
+```
+
+---
+
+# O QUE FOI CORRIGIDO
+
+✅ Partes brancas sincronizadas com dark mode
+
+✅ Sidebar funcionando no dark mode
+
+✅ Topo funcionando no dark mode
+
+✅ Input funcionando no dark mode
+
+✅ Lista de conversas funcionando no dark mode
+
+✅ Estrutura HTML reorganizada
+
+✅ Melhor separação visual
+
+✅ Layout mais profissional
