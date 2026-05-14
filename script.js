@@ -458,6 +458,10 @@ async function chamarGemini() {
 
   try {
 
+    // =========================
+    // API KEY
+    // =========================
+
     const apiKey =
       await carregarApiKeyGemini();
 
@@ -467,18 +471,30 @@ async function chamarGemini() {
 
     }
 
+    // =========================
+    // HISTÓRICO
+    // =========================
+
     const historico =
       conversaAtual.mensagens
-      .map(
-        m =>
-          `${m.role === "user"
-            ? "Usuário"
-            : "IA"}: ${m.content}`
-      )
-      .join("\n");
+        .map(
+          m =>
+            `${m.role === "user"
+              ? "Usuário"
+              : "IA"}: ${m.content}`
+        )
+        .join("\n");
+
+    // =========================
+    // MODELO
+    // =========================
 
     const model =
       "gemini-2.5-flash";
+
+    // =========================
+    // REQUISIÇÃO
+    // =========================
 
     const response =
       await fetch(
@@ -510,37 +526,73 @@ async function chamarGemini() {
                   }
                 ]
               }
-            ]
+            ],
+
+            generationConfig: {
+
+              temperature: 0.7,
+
+              maxOutputTokens: 1000
+
+            }
 
           })
 
         }
       );
 
+    // =========================
+    // ERRO API
+    // =========================
+
     if (!response.ok) {
 
-      return "Erro Gemini.";
+      const erroTexto =
+        await response.text();
+
+      console.error(
+        "ERRO GEMINI:",
+        erroTexto
+      );
+
+      return "Erro ao conectar Gemini.";
 
     }
+
+    // =========================
+    // RESPOSTA
+    // =========================
 
     const data =
       await response.json();
 
-    return data
-      ?.candidates?.[0]
+    console.log(data);
+
+    const resposta =
+      data?.candidates?.[0]
       ?.content?.parts?.[0]
-      ?.text || "Sem resposta.";
+      ?.text;
+
+    if (!resposta) {
+
+      return "Gemini sem resposta.";
+
+    }
+
+    return resposta;
 
   } catch (erro) {
 
-    console.error(erro);
+    console.error(
+      "ERRO GEMINI:",
+      erro
+    );
 
     return "Falha Gemini.";
 
   }
 
 }
-
 // =========================
 // ENTER
 // =========================
@@ -817,64 +869,14 @@ function iniciarAnimacao() {
   }, 3000);
 
 }
-/* =========================
-SIDEBAR DARK MODE
-========================= */
+// =========================
+// DARK MODE
+// =========================
 
-.sidebar {
-  background: #ffffff;
-  transition: 0.3s;
-}
+function alternarTema() {
 
-body.dark .sidebar {
-  background: #111827;
-}
+  document.body.classList.toggle(
+    "dark"
+  );
 
-/* =========================
-ÁREA INPUT DARK MODE
-========================= */
-
-.input-area {
-  background: #ffffff;
-  transition: 0.3s;
-}
-
-body.dark .input-area {
-  background: #111827;
-}
-
-/* =========================
-INPUT DARK MODE
-========================= */
-
-#inputMensagem {
-  background: #f1f1f1;
-  color: #000;
-  transition: 0.3s;
-}
-
-body.dark #inputMensagem {
-  background: #1f2937;
-  color: #fff;
-}
-
-/* =========================
-BOTÕES DARK MODE
-========================= */
-
-body.dark .conversa-item {
-  background: #1f2937;
-  color: #fff;
-}
-
-body.dark .conversa-item:hover {
-  background: #2b3547;
-}
-
-/* =========================
-PLACEHOLDER
-========================= */
-
-body.dark #inputMensagem::placeholder {
-  color: #9ca3af;
 }

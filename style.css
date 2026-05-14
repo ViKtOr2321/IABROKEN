@@ -6,30 +6,20 @@ RESET
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
 }
-
-/* ========================================
-HTML / BODY
-======================================== */
 
 html,
 body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  font-family: Arial, sans-serif;
 }
-
-/* ========================================
-BODY
-======================================== */
 
 body {
   background: #f5f7fb;
-  color: #111;
-  transition:
-    background 0.3s,
-    color 0.3s;
+  color: #111827;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ========================================
@@ -37,16 +27,10 @@ CONTAINER
 ======================================== */
 
 .container {
-
   width: 100%;
-
   height: 100vh;
-
   display: flex;
-
-  flex-direction: row;
-
-  position: relative;
+  overflow: hidden;
 }
 
 /* ========================================
@@ -54,24 +38,15 @@ SIDEBAR
 ======================================== */
 
 .sidebar {
-
   width: 280px;
-
   height: 100vh;
-
   background: #ffffff;
-
-  border-right: 1px solid #dcdcdc;
-
+  border-right: 1px solid #e5e7eb;
   display: flex;
-
   flex-direction: column;
-
-  padding: 15px;
-
-  gap: 15px;
-
-  overflow: hidden;
+  padding: 16px;
+  gap: 16px;
+  transition: 0.3s;
 }
 
 /* ========================================
@@ -79,30 +54,23 @@ BOTÃO NOVA CONVERSA
 ======================================== */
 
 #btnNovaConversa {
-
   width: 100%;
-
   height: 52px;
-
   border: none;
-
   border-radius: 14px;
-
   background: #19c37d;
-
-  color: black;
-
+  color: #000;
   font-size: 15px;
-
   font-weight: bold;
-
   cursor: pointer;
-
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   transition: 0.2s;
 }
 
 #btnNovaConversa:hover {
-
   transform: scale(1.02);
 }
 
@@ -111,18 +79,21 @@ LISTA CONVERSAS
 ======================================== */
 
 #listaConversas {
-
   flex: 1;
-
   overflow-y: auto;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 10px;
-
   padding-right: 5px;
+}
+
+#listaConversas::-webkit-scrollbar {
+  width: 6px;
+}
+
+#listaConversas::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
 }
 
 /* ========================================
@@ -130,43 +101,23 @@ ITEM CONVERSA
 ======================================== */
 
 .conversa-item {
-
-  width: 100%;
-
-  min-height: 55px;
-
-  background: #f1f3f7;
-
+  background: #f3f4f6;
   border-radius: 12px;
-
-  padding: 12px;
-
+  padding: 14px;
   cursor: pointer;
-
   transition: 0.2s;
-
   font-size: 14px;
-
-  color: #111;
-
-  display: flex;
-
-  align-items: center;
-
+  color: #111827;
   word-break: break-word;
 }
 
 .conversa-item:hover {
-
-  background: #e5e8ef;
+  background: #e5e7eb;
 }
 
 .conversa-item.ativa {
-
   background: #19c37d;
-
-  color: black;
-
+  color: #000;
   font-weight: bold;
 }
 
@@ -175,18 +126,12 @@ ITEM CONVERSA
 ======================================== */
 
 .main-area {
-
   flex: 1;
-
   display: flex;
-
   flex-direction: column;
-
   height: 100vh;
-
-  overflow: hidden;
-
   position: relative;
+  overflow: hidden;
 }
 
 /* ========================================
@@ -194,26 +139,19 @@ TOPO
 ======================================== */
 
 .topo {
-
   width: 100%;
-
   height: 75px;
-
-  background: white;
-
-  border-bottom: 1px solid #dcdcdc;
-
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
-
   align-items: center;
-
-  justify-content: flex-start;
-
-  padding: 0 25px;
-
-  position: relative;
-
+  justify-content: space-between;
+  padding: 0 24px;
+  gap: 20px;
   z-index: 100;
+  transition: 0.3s;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 /* ========================================
@@ -221,45 +159,36 @@ LOGO
 ======================================== */
 
 .logo-area {
-
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   cursor: pointer;
-
-  transition: 0.3s;
+  transition: 0.2s;
 }
 
 .logo-area:hover {
-
-  opacity: 0.8;
-
-  transform: scale(1.02);
+  opacity: 0.85;
 }
 
 .logo-area i {
-
   font-size: 24px;
-
   color: #19c37d;
 }
 
 .logo-area h1 {
-
-  border: none;
-
-  background: transparent;
-
-  height: auto;
-
   font-size: 24px;
+  font-weight: bold;
+}
 
-  margin: 0;
+/* ========================================
+TOP ACTIONS
+======================================== */
 
-  color: inherit;
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
 }
 
 /* ========================================
@@ -267,120 +196,89 @@ TOGGLE IA
 ======================================== */
 
 .toggle-wrapper {
-
-  position: fixed;
-
-  top: 8px;
-
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  z-index: 999999;
+  display: flex;
+  align-items: center;
 }
 
 .toggle-container {
-
   display: flex;
-
   align-items: center;
-
-  gap: 12px;
-
-  background: rgba(15,17,21,0.95);
-
-  padding: 8px 16px;
-
-  border-radius: 50px;
-
-  backdrop-filter: blur(10px);
-
-  box-shadow:
-    0 0 15px rgba(0,0,0,0.25);
+  gap: 10px;
+  background: #f1f5f9;
+  padding: 8px 14px;
+  border-radius: 999px;
+  transition: 0.3s;
 }
 
 .toggle-label {
-
   font-size: 14px;
-
-  font-weight: bold;
-
-  color: white;
+  font-weight: 600;
 }
 
-/* ========================================
-SWITCH
-======================================== */
-
 .switch {
-
   position: relative;
-
-  display: inline-block;
-
-  width: 64px;
-
-  height: 34px;
+  width: 54px;
+  height: 28px;
 }
 
 .switch input {
-
   opacity: 0;
-
   width: 0;
-
   height: 0;
 }
 
-/* ========================================
-SLIDER
-======================================== */
-
 .slider {
-
   position: absolute;
-
+  inset: 0;
+  background: #cbd5e1;
+  border-radius: 999px;
   cursor: pointer;
-
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  background: #dcdcdc;
-
-  transition: 0.4s;
-
-  border-radius: 50px;
+  transition: 0.3s;
 }
 
-.slider:before {
-
-  position: absolute;
-
+.slider::before {
   content: "";
-
-  height: 26px;
-  width: 26px;
-
-  left: 4px;
-  bottom: 4px;
-
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
   background: white;
-
-  transition: 0.4s;
-
   border-radius: 50%;
+  transition: 0.3s;
 }
 
 .switch input:checked + .slider {
-
-  background: #19c37d;
+  background: #2563eb;
 }
 
-.switch input:checked + .slider:before {
+.switch input:checked + .slider::before {
+  transform: translateX(26px);
+}
 
-  transform: translateX(30px);
+/* ========================================
+BOTÃO DARK MODE
+======================================== */
+
+.moon-icon {
+  min-width: 46px;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: #19c37d;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.moon-icon:hover {
+  transform: scale(1.06);
 }
 
 /* ========================================
@@ -388,24 +286,24 @@ CHAT AREA
 ======================================== */
 
 #chatArea {
-
   flex: 1;
-
   overflow-y: auto;
-
-  padding: 25px;
-
-  padding-bottom: 130px;
-
+  padding: 24px;
+  padding-bottom: 120px;
   display: flex;
-
   flex-direction: column;
-
-  gap: 15px;
-
-  scroll-behavior: smooth;
-
+  gap: 16px;
   background: #f5f7fb;
+  scroll-behavior: smooth;
+}
+
+#chatArea::-webkit-scrollbar {
+  width: 7px;
+}
+
+#chatArea::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
 }
 
 /* ========================================
@@ -413,315 +311,99 @@ MENSAGENS
 ======================================== */
 
 .mensagem {
-
   max-width: 75%;
-
   padding: 14px 18px;
-
-  border-radius: 14px;
-
-  line-height: 1.5;
-
+  border-radius: 16px;
+  line-height: 1.6;
   font-size: 15px;
-
   word-break: break-word;
-
   animation: aparecer 0.2s ease;
 }
 
-/* ========================================
-ANIMAÇÃO
-======================================== */
+.usuario {
+  align-self: flex-end;
+  background: #19c37d;
+  color: #000;
+}
+
+.ia {
+  align-self: flex-start;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+}
 
 @keyframes aparecer {
-
   from {
-
     opacity: 0;
-
     transform: translateY(10px);
   }
 
   to {
-
     opacity: 1;
-
     transform: translateY(0);
   }
 }
 
 /* ========================================
-USUÁRIO
-======================================== */
-
-.usuario {
-
-  align-self: flex-end;
-
-  background: #19c37d;
-
-  color: black;
-}
-
-/* ========================================
-IA
-======================================== */
-
-.ia {
-
-  align-self: flex-start;
-
-  background: white;
-
-  color: black;
-
-  border: 1px solid #ddd;
-}
-
-/* ========================================
-ÁREA INPUT
+CHAT BOX
 ======================================== */
 
 .chat-box {
-
   position: fixed;
-
   bottom: 0;
-
   right: 0;
-
   width: calc(100% - 280px);
-
   min-height: 90px;
-
-  background: white;
-
-  border-top: 1px solid #dcdcdc;
-
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
-  padding: 15px 20px;
-
-  z-index: 100000;
+  padding: 16px 20px;
+  z-index: 1000;
+  transition: 0.3s;
 }
 
 /* ========================================
 INPUT
 ======================================== */
 
-.chat-box input {
-
+#inputMensagem {
   flex: 1;
-
   height: 55px;
-
   border: none;
-
-  border-radius: 14px;
-
-  padding: 0 18px;
-
-  background: #f1f3f7;
-
-  color: black;
-
-  font-size: 15px;
-
   outline: none;
+  border-radius: 14px;
+  background: #f3f4f6;
+  padding: 0 18px;
+  font-size: 15px;
+  color: #111827;
+  transition: 0.3s;
+}
+
+#inputMensagem::placeholder {
+  color: #6b7280;
 }
 
 /* ========================================
-BOTÕES
+BOTÕES CHAT
 ======================================== */
 
 .chat-box button {
-
   width: 50px;
-
   height: 50px;
-
   border: none;
-
-  border-radius: 12px;
-
+  border-radius: 14px;
   background: #19c37d;
-
-  color: black;
-
-  cursor: pointer;
-
+  color: #000;
   font-size: 18px;
-
+  cursor: pointer;
   transition: 0.2s;
 }
 
 .chat-box button:hover {
-
   transform: scale(1.05);
-}
-
-/* ========================================
-BOTÃO DARK MODE
-======================================== */
-
-.top-icons {
-
-  position: fixed;
-
-  top: 10px;
-
-  right: 20px;
-
-  z-index: 9999999;
-}
-
-.moon-icon {
-
-  width: 45px;
-
-  height: 45px;
-
-  border-radius: 50%;
-
-  background: #19c37d;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  cursor: pointer;
-
-  color: black;
-
-  font-size: 18px;
-
-  transition: 0.3s;
-
-  box-shadow:
-    0 0 10px rgba(0,0,0,0.2);
-}
-
-.moon-icon:hover {
-
-  transform: scale(1.1);
-}
-
-/* ========================================
-TELA INICIAL
-======================================== */
-
-#telaInicial {
-
-  position: fixed;
-
-  top: 0;
-
-  left: 280px;
-
-  width: calc(100% - 280px);
-
-  height: 100vh;
-
-  background:
-    linear-gradient(
-      135deg,
-      #0f1115,
-      #1b1e27
-    );
-
-  display: flex;
-
-  flex-direction: column;
-
-  justify-content: center;
-
-  align-items: center;
-
-  overflow: hidden;
-
-  z-index: 9999;
-
-  transition: 1s;
-}
-
-/* ========================================
-CENÁRIO
-======================================== */
-
-.cenario {
-
-  position: relative;
-
-  width: 550px;
-
-  height: 300px;
-}
-
-/* ========================================
-CASA
-======================================== */
-
-.casa {
-
-  position: absolute;
-
-  right: 40px;
-
-  bottom: 0;
-
-  width: 220px;
-
-  filter:
-    drop-shadow(
-      0 0 25px rgba(255,255,255,0.1)
-    );
-}
-
-/* ========================================
-ROBÔ
-======================================== */
-
-.robo {
-
-  position: absolute;
-
-  left: 0;
-
-  bottom: 0;
-
-  width: 140px;
-
-  transition: 2.5s ease;
-}
-
-/* ========================================
-TEXTOS INICIAIS
-======================================== */
-
-#telaInicial h2 {
-
-  margin-top: 30px;
-
-  color: white;
-
-  font-size: 36px;
-
-  font-weight: bold;
-}
-
-#telaInicial p {
-
-  margin-top: 10px;
-
-  color: #bdbdbd;
-
-  font-size: 16px;
 }
 
 /* ========================================
@@ -729,22 +411,18 @@ MICROFONE GRAVANDO
 ======================================== */
 
 .gravando {
-
   background: #ff4d4d !important;
-
-  color: white;
-
+  color: white !important;
   animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
-
   0% {
     transform: scale(1);
   }
 
   50% {
-    transform: scale(1.1);
+    transform: scale(1.08);
   }
 
   100% {
@@ -753,434 +431,69 @@ MICROFONE GRAVANDO
 }
 
 /* ========================================
+TELA INICIAL
+======================================== */
+
+#telaInicial {
+  position: fixed;
+  top: 75px;
+  left: 280px;
+  width: calc(100% - 280px);
+  height: calc(100vh - 75px);
+  max-width: calc(100% - 280px);
+  background: linear-gradient(135deg, #0f1115, #1b1e27);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 900;
+  transition: 0.5s;
+}
+
+.cenario {
+  position: relative;
+  width: 520px;
+  height: 280px;
+}
+
+.casa {
+  position: absolute;
+  right: 40px;
+  bottom: 0;
+  width: 220px;
+  filter: drop-shadow(0 0 25px rgba(255,255,255,0.08));
+}
+
+.robo {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 140px;
+  transition: 2.5s ease;
+}
+
+#telaInicial h2 {
+  margin-top: 30px;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+#telaInicial p {
+  margin-top: 10px;
+  color: #cbd5e1;
+  font-size: 16px;
+}
+
+/* ========================================
 DARK MODE
 ======================================== */
 
 body.dark {
-
-  background: #0b0c10;
-
-  color: white;
-}
-
-body.dark .sidebar {
-
-  background: #17191f;
-
-  border-right: 1px solid #252832;
-}
-
-body.dark .conversa-item {
-
-  background: #22252d;
-
-  color: white;
-}
-
-body.dark .conversa-item:hover {
-
-  background: #2a2d36;
-}
-
-body.dark .conversa-item.ativa {
-
-  background: #19c37d;
-
-  color: black;
-}
-
-body.dark .container {
-
-  background: #0f1115;
-}
-
-body.dark .topo {
-
-  background: #17191f;
-
-  border-bottom: 1px solid #252832;
-}
-
-body.dark #chatArea {
-
-  background: #0f1115;
-}
-
-body.dark .chat-box {
-
-  background: #17191f;
-
-  border-top: 1px solid #252832;
-}
-
-body.dark .chat-box input {
-
-  background: #22252d;
-
-  color: white;
-}
-
-body.dark .ia {
-
-  background: #22252d;
-
-  color: white;
-
-  border: 1px solid #30333d;
-}
-
-body.dark .usuario {
-
-  background: #19c37d;
-
-  color: black;
-}
-
-body.dark .toggle-container {
-
-  background: rgba(23,25,31,0.95);
-}
-
-body.dark .toggle-label {
-
-  color: #fff;
-}
-
-/* ========================================
-RESPONSIVO
-======================================== */
-
-@media (max-width: 768px) {
-
-  .sidebar {
-
-    width: 90px;
-
-    padding: 10px;
-  }
-
-  #btnNovaConversa {
-
-    font-size: 12px;
-  }
-
-  .chat-box {
-
-    width: calc(100% - 90px);
-  }
-
-  #telaInicial {
-
-    left: 90px;
-
-    width: calc(100% - 90px);
-  }
-
-  .topo {
-
-    padding: 0 15px;
-  }
-
-  .logo-area h1 {
-
-    font-size: 20px;
-  }
-
-  .mensagem {
-
-    max-width: 90%;
-
-    font-size: 14px;
-  }
-
-  .chat-box {
-
-    padding: 10px;
-  }
-
-  .chat-box input {
-
-    height: 50px;
-  }
-
-  .chat-box button {
-
-    width: 45px;
-
-    height: 45px;
-  }
-
-  .cenario {
-
-    width: 320px;
-
-    height: 220px;
-  }
-
-  .casa {
-
-    width: 140px;
-  }
-
-  .robo {
-
-    width: 90px;
-  }
-
-  #telaInicial h2 {
-
-    font-size: 26px;
-  }
-
-  .toggle-wrapper {
-
-    top: 12px;
-  }
-
-  .toggle-container {
-
-    padding: 6px 12px;
-
-    gap: 8px;
-  }
-
-  .toggle-label {
-
-    font-size: 12px;
-  }
-}
-# HTML CORRIGIDO — BROKERAI
-
-Substitua TODO o seu HTML atual por este:
-
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>BrokerAI</title>
-
-  <!-- FONT AWESOME -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  >
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
-
-</head>
-
-<body>
-
-  <!-- ========================= -->
-  <!-- CONTAINER -->
-  <!-- ========================= -->
-
-  <div class="container">
-
-    <!-- ========================= -->
-    <!-- SIDEBAR -->
-    <!-- ========================= -->
-
-    <aside class="sidebar">
-
-      <button
-        id="btnNovaConversa"
-        class="btn-nova-conversa"
-      >
-        <i class="fa-solid fa-plus"></i>
-        <span>Nova conversa</span>
-      </button>
-
-      <!-- LISTA -->
-      <div id="listaConversas"></div>
-
-    </aside>
-
-    <!-- ========================= -->
-    <!-- MAIN -->
-    <!-- ========================= -->
-
-    <main class="main-area">
-
-      <!-- ========================= -->
-      <!-- TOPO -->
-      <!-- ========================= -->
-
-      <header class="topo">
-
-        <!-- LOGO -->
-        <div
-          class="logo-area"
-          onclick="reiniciarChat()"
-        >
-
-          <i class="fa-solid fa-building"></i>
-
-          <h1>BrokerAI</h1>
-
-        </div>
-
-        <!-- AÇÕES -->
-        <div class="top-actions">
-
-          <!-- TOGGLE IA -->
-          <div class="toggle-wrapper">
-
-            <div class="toggle-container">
-
-              <span
-                class="toggle-label"
-                id="labelGPT"
-              >
-                GPT
-              </span>
-
-              <label class="switch">
-
-                <input
-                  type="checkbox"
-                  id="toggleIA"
-                >
-
-                <span class="slider"></span>
-
-              </label>
-
-              <span
-                class="toggle-label"
-                id="labelGemini"
-              >
-                Gemini
-              </span>
-
-            </div>
-
-          </div>
-
-          <!-- DARK MODE -->
-          <button
-            class="moon-icon"
-            onclick="alternarTema()"
-            type="button"
-          >
-            <i class="fa-solid fa-moon"></i>
-          </button>
-
-        </div>
-
-      </header>
-
-      <!-- ========================= -->
-      <!-- TELA INICIAL -->
-      <!-- ========================= -->
-
-      <section id="telaInicial">
-
-        <div class="cenario">
-
-          <!-- CASA -->
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/69/69524.png"
-            class="casa"
-            alt="Casa"
-          >
-
-          <!-- ROBÔ -->
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
-            class="robo"
-            id="robo"
-            alt="Robô"
-          >
-
-        </div>
-
-        <h2>Bem-vindo ao BrokerAI</h2>
-
-        <p>
-          Seu assistente inteligente imobiliário
-        </p>
-
-      </section>
-
-      <!-- ========================= -->
-      <!-- CHAT -->
-      <!-- ========================= -->
-
-      <main
-        id="chatArea"
-        class="chat-area"
-      ></main>
-
-      <!-- ========================= -->
-      <!-- INPUT -->
-      <!-- ========================= -->
-
-      <div class="chat-box">
-
-        <!-- INPUT -->
-        <input
-          type="text"
-          id="inputMensagem"
-          placeholder="Pergunte algo..."
-          autocomplete="off"
-        >
-
-        <!-- MICROFONE -->
-        <button
-          class="icon-button"
-          type="button"
-          id="btnMicrofone"
-        >
-          <i class="fa-solid fa-microphone"></i>
-        </button>
-
-        <!-- ENVIAR -->
-        <button
-          class="send-button"
-          type="button"
-          onclick="enviarMensagem()"
-        >
-          <i class="fa-solid fa-paper-plane"></i>
-        </button>
-
-      </div>
-
-    </main>
-
-  </div>
-
-  <!-- AZURE SPEECH -->
-  <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
-
-  <!-- SCRIPT -->
-  <script src="script.js"></script>
-
-</body>
-</html>
-```
-
----
-
-# AGORA ADICIONE ISSO NO FINAL DO SEU CSS
-
-/* ========================= */
-/* DARK MODE GLOBAL */
-/* ========================= */
-
-body.dark {
   background: #0f172a;
-  color: #ffffff;
+  color: white;
+  overflow: hidden;
 }
 
 body.dark .sidebar {
@@ -1188,13 +501,30 @@ body.dark .sidebar {
   border-right: 1px solid #1f2937;
 }
 
-body.dark .main-area {
-  background: #0f172a;
-}
-
 body.dark .topo {
   background: #111827;
   border-bottom: 1px solid #1f2937;
+}
+
+body.dark .logo-area {
+  color: white;
+}
+
+body.dark .toggle-container {
+  background: #1e293b;
+}
+
+body.dark .toggle-label {
+  color: white;
+}
+
+body.dark .moon-icon {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark #chatArea {
+  background: #0f172a;
 }
 
 body.dark .chat-box {
@@ -1205,25 +535,10 @@ body.dark .chat-box {
 body.dark #inputMensagem {
   background: #1e293b;
   color: white;
-  border: 1px solid #334155;
 }
 
 body.dark #inputMensagem::placeholder {
   color: #94a3b8;
-}
-
-body.dark .toggle-container {
-  background: #1e293b;
-  color: white;
-}
-
-body.dark .moon-icon {
-  background: #1e293b;
-  color: white;
-}
-
-body.dark .logo-area {
-  color: white;
 }
 
 body.dark .conversa-item {
@@ -1235,21 +550,89 @@ body.dark .conversa-item:hover {
   background: #334155;
 }
 
-body.dark #telaInicial {
-  background: #0f172a;
+body.dark .ia {
+  background: #1e293b;
   color: white;
+  border: 1px solid #334155;
 }
 
-body.dark .chat-area {
-  background: #0f172a;
-}
-
-body.dark .mensagem.usuario {
+body.dark .usuario {
   background: #2563eb;
   color: white;
 }
 
-body.dark .mensagem.ia {
-  background: #1e293b;
-  color: white;
+body.dark #telaInicial {
+  background: linear-gradient(135deg, #020617, #111827);
+}
+
+/* ========================================
+RESPONSIVO
+======================================== */
+
+@media (max-width: 768px) {
+
+  .sidebar {
+    width: 90px;
+    padding: 10px;
+  }
+
+  #btnNovaConversa span {
+    display: none;
+  }
+
+  .chat-box {
+    width: calc(100% - 90px);
+  }
+
+  #telaInicial {
+    left: 90px;
+    width: calc(100% - 90px);
+  }
+
+  .logo-area h1 {
+    font-size: 20px;
+  }
+
+  .mensagem {
+    max-width: 90%;
+  }
+
+  .chat-box {
+    padding: 10px;
+  }
+
+  .chat-box button {
+    width: 45px;
+    height: 45px;
+  }
+
+  #inputMensagem {
+    height: 50px;
+  }
+
+  .cenario {
+    width: 320px;
+    height: 220px;
+  }
+
+  .casa {
+    width: 140px;
+  }
+
+  .robo {
+    width: 90px;
+  }
+
+  #telaInicial h2 {
+    font-size: 26px;
+  }
+
+  .toggle-container {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .toggle-label {
+    font-size: 12px;
+  }
 }
